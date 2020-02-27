@@ -8,6 +8,7 @@ Tested under macOS, should work under Linux as well.
 
 ```bash
 # note: this is probably not needed under macOS if you put Blender to /Applications/Blender.app 
+# a pro tip: it is convenient to use direnv for this
 export HYLC_BLENDER_PATH="/path/to/your/blender"
 export HYLC_BLENDER_PYTHON_PATH="/path/to/your/blender/and/its/python"
 ```
