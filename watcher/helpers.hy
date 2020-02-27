@@ -1,21 +1,27 @@
+(import [hy.contrib.walk [*]])
+(require [hy.contrib.walk [*]])
+
 (import bpy)
 
+(setv true True)
+(setv false False)
+
 ; prefix all created objects with this so we can ignore everything else in the scene
-(def prefix "HyLife")
+(setv prefix "HyLife")
 
 ; function to clear all of the objects created by this rig (good to call at the start of script)
 (defn clear []
   ; get in object mode
-  (try (apply bpy.ops.object.mode_set [] {"mode" "OBJECT"}) (catch [e Exception]))
+  (try (bpy.ops.object.mode_set #** {"mode" "OBJECT"}) (except [e Exception]))
   ; deselect everything first
-  (apply bpy.ops.object.select_all [] {"action" "DESELECT"})
+  (bpy.ops.object.select_all #** {"action" "DESELECT"})
   ; loop through all objects
   (for [o bpy.context.scene.objects]
     ; if it has our prefix then delete it
     (if (o.name.startswith prefix)
-      (setv o.select true)))
+      (o.select_set true)))
   ; go ahead and execute the delete on the selected objects
-  (apply bpy.ops.object.delete [] {"use_global" false}))
+  (bpy.ops.object.delete #** {"use_global" false}))
 
 ; *** aliases ***
 
@@ -23,19 +29,19 @@
 
 ; *** aliases - object builders ***
 
-(def cube bpy.ops.mesh.primitive_cube_add)
-(def torus bpy.ops.mesh.primitive_torus_add)
+(setv cube bpy.ops.mesh.primitive_cube_add)
+(setv torus bpy.ops.mesh.primitive_torus_add)
 
 ; *** aliases - transforms ***
 
-(def scale bpy.ops.transform.resize)
-(def resize bpy.ops.transform.resize)
-(def rotate bpy.ops.transform.rotate)
-(def translate bpy.ops.transform.translate)
+(setv scale bpy.ops.transform.resize)
+(setv resize bpy.ops.transform.resize)
+(setv rotate bpy.ops.transform.rotate)
+(setv translate bpy.ops.transform.translate)
 
 ; object parameter aliases
 
-(def parameter-aliases {
+(setv parameter-aliases {
   :loc 'location
   :l 'location
   :s 'scale
@@ -52,7 +58,7 @@
 
 ; run through parameters replacing all with aliases
 (defn replace-aliases [params]
-  (dict (list-comp [(replace-alias k) (get params k)] [k params])))
+  (dfor k params [(replace-alias k) (get params k)]))
 
 ; filter the parameters list into ones that can go into blender calls versus ones we apply manually
 (defn filter-internal-param [param]
@@ -61,11 +67,13 @@
 ; *** do ***
 
 (defn mk-ob [base-call &optional [params {}]]
-  (let [[params-unaliased (replace-aliases params)]
-        [params-for-call (dict-comp p (params-unaliased.get p) [p params-unaliased] (not (filter-internal-param p)))]
-        [params-for-us (dict-comp p (params-unaliased.get p) [p params-unaliased] (filter-internal-param p))]]
-    (apply base-call [] params-for-call)
-    (let [[ob bpy.context.object]]
+  (let [params-unaliased (replace-aliases params)
+        params-for-call (dfor p params-unaliased :if (not (filter-internal-param p)) [p (get params-unaliased p)])
+        params-for-us (dfor p params-unaliased :if (filter-internal-param p) [p (get params-unaliased p)])]
+    (base-call #** params-for-call)
+    ;(print "!!! %o" % bpy.context.object)
+
+    (let [ob bpy.context.object]
       ; mutate :(
       ; set the name to our prefix so we can recognise out own objects later
       (setv ob.name prefix)
@@ -73,18 +81,18 @@
       (setv ob.data.name (+ prefix "Mesh"))
       ; scale the object if requested
       (if (in "scale" params-for-us)
-        (apply scale [] {"value" (params-for-us.get "scale")}))
+        (scale #** {"value" (params-for-us.get "scale")}))
       (if (in "rotate" params-for-us)
-        (apply rotate [] {"value" (first (params-for-us.get "rotate")) "axis" (slice (params-for-us.get "rotate") 1)}))
+        (rotate #** {"value" (first (params-for-us.get "rotate")) "axis" (slice (params-for-us.get "rotate") 1)}))
       (if (in "translate" params-for-us)
-        (apply translate [] {"value" (params-for-us.get "translate")}))
+        (translate #** {"value" (params-for-us.get "translate")}))
       ob)))
 
 (defn tfrm [base-call arg &optional args]
-  (let [[v {"value" arg}]]
-    (apply base-call [] (if args (merge-with identity v (replace-aliases args)) v))))
+  (let [v {"value" arg}]
+    (base-call #** (if args (merge-with identity v (replace-aliases args)) v))))
 
-(def tf tfrm)
+(setv tf tfrm)
 
 (defn yo []
    (print "Yo!"))
