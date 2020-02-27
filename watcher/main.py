@@ -6,8 +6,11 @@ import traceback
 # we prepend our modules to sys paths to avoid picking
 # any possibly existing outdated libs from blender
 this_dir = os.path.abspath(os.path.dirname(__file__))
+root_dir = os.path.abspath(os.path.join(this_dir, ".."))
 modules_dir = os.path.join(this_dir, "modules")
+lib_dir = os.path.join(root_dir, "lib")
 sys.path.insert(0, modules_dir)
+sys.path.insert(0, lib_dir)
 sys.path.insert(0, this_dir)
 
 import hy
