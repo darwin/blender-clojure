@@ -43,6 +43,20 @@ def filter_hy_traceback(exc_traceback):
     return new_tb
 
 
+
+def install_unhandled_exceptions_handler():
+    orig_excepthook = sys.excepthook
+
+    def handle_unhandled_exceptions(exc_type, exc_value, exc_traceback):
+        if exc_type is KeyboardInterrupt:
+            # hard exit
+            sys.exit(1)
+        else:
+            orig_excepthook(exc_type, exc_value, exc_traceback)
+
+    sys.excepthook = handle_unhandled_exceptions
+
+
 def present_hy_exception(exc_type, value, hy_traceback):
     filtered_traceback = filter_hy_traceback(hy_traceback)
     backtrace.hook(tpe=exc_type, value=value, tb=filtered_traceback, **backtrace_opts)
@@ -115,6 +129,7 @@ def unregister():
 
 
 if __name__ == "__main__":
+    install_unhandled_exceptions_handler()
     register()
     # test call
     bpy.ops.wm.modal_timer_operator()
