@@ -17,20 +17,24 @@ from hy.errors import (filtered_hy_exceptions, hy_exc_handler)
 # import blender
 import bpy
 
-entry = os.environ.get("HYLC_ENTRY_FILE", "entry.hy")
-if not os.path.exists(entry):
-    print("WARNING: watched file '%s' does not exists" % entry)
+live_file_path = os.environ.get("HYLC_LIVE_FILE")
+if live_file_path is None:
+    raise Exception("HYLC_LIVE_FILE not specified")
+
+if not os.path.exists(live_file_path):
+    print("WARNING: watched file '%s' does not exists" % live_file_path)
 
 
 def run_hylang_file(path):
     print("Reloading '%s' " % path)
+
     try:
         with filtered_hy_exceptions():
             runhy.run_path(path, run_name='__main__')
     except:
         hy_exc_handler(*sys.exc_info())
 
-    print(entry + " Done")
+    print("Done executing '%s'" % path)
 
 
 class ModalTimerOperator(bpy.types.Operator):
@@ -38,16 +42,18 @@ class ModalTimerOperator(bpy.types.Operator):
     bl_idname = "wm.modal_timer_operator"
     bl_label = "Modal Timer Operator"
     last_check = 0
+    watched_file_path = live_file_path
 
     _timer = None
 
     def modal(self, _context, event):
         if event.type == 'TIMER':
-            if os.path.exists(entry):
-                statbuf = os.stat(entry)
+            path = self.watched_file_path
+            if os.path.exists(path):
+                statbuf = os.stat(path)
                 if statbuf.st_mtime > self.last_check:
                     self.last_check = statbuf.st_mtime
-                    run_hylang_file(entry)
+                    run_hylang_file(path)
 
         return {'PASS_THROUGH'}
 
@@ -55,17 +61,17 @@ class ModalTimerOperator(bpy.types.Operator):
         wm = context.window_manager
         self._timer = wm.event_timer_add(0.1, window=context.window)
         wm.modal_handler_add(self)
-        print("Watching " + entry + " for changes and re-loading.")
+        print("Watching '%s' for changes and re-loading." % self.watched_file_path)
         return {'RUNNING_MODAL'}
 
     def cancel(self, context):
         wm = context.window_manager
         wm.event_timer_remove(self._timer)
-        print("Finished watching " + entry)
+        print("Finished watching '%s'" % self.watched_file_path)
 
 
 def frame_change_handler(_scene):
-    run_hylang_file(entry)
+    run_hylang_file(live_file_path)
 
 
 def register():
