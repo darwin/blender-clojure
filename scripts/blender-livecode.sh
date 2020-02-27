@@ -29,4 +29,4 @@ echo "HYLC_BLENDER_PYTHON_PATH=$HYLC_BLENDER_PYTHON_PATH"
 echo "HYLC_LIVE_FILE=$HYLC_LIVE_FILE"
 
 set -x
-exec "$HYLC_BLENDER_PATH" "$BLENDER_FILE" --python watcher/main.py
+exec "$HYLC_BLENDER_PATH" "$BLENDER_FILE" --python "$WATCHER_DIR/main.py"

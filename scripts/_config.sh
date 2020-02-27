@@ -14,13 +14,14 @@ get_absolute_path_of_existing_file() {
 pushd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null || exit 11
 
 ROOT_DIR=$(pwd -P)
+# shellcheck disable=SC2034
+WATCHER_DIR="$ROOT_DIR/watcher"
 
 # mac specific
 MAC_BLENDER_APP_PATH="/Applications/Blender.app"
 MAC_BLENDER_PATH="$MAC_BLENDER_APP_PATH/Contents/MacOS/Blender"
 MAC_BLENDER_PYTHON_PATH="$MAC_BLENDER_APP_PATH/Contents/Resources/2.82/python"
 
-# if not on mac, override these e.g. via envrc
 HYLC_BLENDER_PATH=${HYLC_BLENDER_PATH:-$MAC_BLENDER_PATH}
 HYLC_BLENDER_PYTHON_PATH=${HYLC_BLENDER_PYTHON_PATH:-$MAC_BLENDER_PYTHON_PATH}
 
