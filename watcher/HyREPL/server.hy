@@ -6,7 +6,7 @@
   [socketserver [ThreadingMixIn TCPServer BaseRequestHandler]])
 
 (import [HyREPL [bencode session]])
-(import [HyREPL.middleware [eval]])
+(import [HyREPL.middleware [base eval]])
 
 (require [hy.contrib.walk [let]])
 
