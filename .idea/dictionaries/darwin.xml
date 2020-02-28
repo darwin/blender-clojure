@@ -2,6 +2,7 @@
   <dictionary name="darwin">
     <words>
       <w>bencode</w>
+      <w>bencoded</w>
       <w>blendfile</w>
       <w>clojurify</w>
       <w>defclass</w>

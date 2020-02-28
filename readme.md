@@ -61,3 +61,5 @@ Hy=>
 ```
 
 My goal is to make this work with Cursive's remote nREPL support. Basic stuff works, but it needs more polish.
+
+![A sneak peek](https://box.binaryage.com/blender-hylc-01.png)
