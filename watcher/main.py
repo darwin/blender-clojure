@@ -140,9 +140,17 @@ def run_repl():
         return None
 
     repl.start_server()
+    print()
+
+
+def print_welcome():
+    print()
+    print("==== hylc watcher =====")
+    print(hylc.describe_environment())
 
 
 if __name__ == "__main__":
+    print_welcome()
     run_repl()
     install_unhandled_exceptions_handler()
     register()
