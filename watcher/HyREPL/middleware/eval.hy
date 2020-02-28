@@ -9,7 +9,6 @@
   [hy.lex.exceptions [LexException]])
 
 (import
-  [HyREPL.workarounds [get-workaround]]
   [HyREPL.ops [ops find-op]])
 
 (require [hy.contrib.walk [let]]
@@ -48,40 +47,38 @@
                    "value" (+ "The values returned by `code` if execution was"
                               " successful. Absent if `ex` and `root-ex` are"
                               " present")}}
-  (let [w (get-workaround (get msg "code"))]
-    (assoc msg "code" (w session msg))
-    (let [code (get msg "code")
-          oldout sys.stdout
-          tokens None
-          writer (fn [x]
-                                 (assoc x "id" (get msg "id") "session" (get msg "session"))
-                                 (.write session x transport))
-          ]
-      (try
-        (setv tokens (tokenize code))
-        (except []
-          (format-exception session msg writer (sys.exc-info))
-          (writer {"status" ["done"] "id" (.get msg "id")}))
-        (else
-          (for [i tokens]
-            (let [p (StringIO)]
-              (try
-                (do
-                  (setv sys.stdout (StringIO))
-                  (let [eval-res (eval i (if (instance? dict eval-module)
-                                            eval-module
-                                            (. eval-module --dict--))
-                                          "__main__")]
-                    (.write p (str eval-res))))
-                (except []
-                  (setv sys.stdout oldout)
-                  (format-exception session msg writer (sys.exc-info)))
-                (else
-                  (when (and (= (.getvalue p) "None") (bool (.getvalue sys.stdout)))
-                    (writer {"out" (.getvalue sys.stdout)}))
-                  (writer {"value" (.getvalue p) "ns" (.get msg "ns" "Hy")})))))
-            (setv sys.stdout oldout)
-            (writer {"status" ["done"]}))))))
+  (let [code (get msg "code")
+        oldout sys.stdout
+        tokens None
+        writer (fn [x]
+                               (assoc x "id" (get msg "id") "session" (get msg "session"))
+                               (.write session x transport))
+        ]
+    (try
+      (setv tokens (tokenize code))
+      (except []
+        (format-exception session msg writer (sys.exc-info))
+        (writer {"status" ["done"] "id" (.get msg "id")}))
+      (else
+        (for [i tokens]
+          (let [p (StringIO)]
+            (try
+              (do
+                (setv sys.stdout (StringIO))
+                (let [eval-res (eval i (if (instance? dict eval-module)
+                                          eval-module
+                                          (. eval-module --dict--))
+                                        "__main__")]
+                  (.write p (str eval-res))))
+              (except []
+                (setv sys.stdout oldout)
+                (format-exception session msg writer (sys.exc-info)))
+              (else
+                (when (and (= (.getvalue p) "None") (bool (.getvalue sys.stdout)))
+                  (writer {"out" (.getvalue sys.stdout)}))
+                (writer {"value" (.getvalue p) "ns" (.get msg "ns" "Hy")})))))
+          (setv sys.stdout oldout)
+          (writer {"status" ["done"]})))))
 
 (defop "load-file" [session msg transport]
        {"doc" "Loads a body of code. Delegates to `eval`"
