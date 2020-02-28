@@ -6,7 +6,15 @@ source "$(dirname "${BASH_SOURCE[0]}")/_config.sh"
 
 BACKTRACE_DEP=git+https://github.com/erzoe/backtrace.git@7e58cff1a8584ec783ba92956e329465c27243d8
 
-KNOWN_PYTHON_DEPS=(hy rply astor clint colorama funcparserlib "$BACKTRACE_DEP")
+KNOWN_PYTHON_DEPS=(
+  hy
+  rply
+  astor
+  clint
+  colorama
+  funcparserlib
+  "$BACKTRACE_DEP"
+)
 
 cd "$ROOT_DIR"
 
