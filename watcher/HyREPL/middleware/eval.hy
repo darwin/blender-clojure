@@ -3,7 +3,7 @@
         [io [StringIO]])
 (import ctypes)
 (import traceback)
-(import hylc)
+(import hylc.backtrace)
 (import
   [hy.lex [tokenize]]
   [hy.lex.exceptions [LexException]])
@@ -21,7 +21,7 @@
         exc-value (second trace)
         exc-traceback (get trace 2)]
     (setv session.last-traceback exc-traceback)
-    (hylc.present-hy-exception exc-type exc-value exc-traceback)
+    (hylc.backtrace.present-hy-exception exc-type exc-value exc-traceback)
     (writer {"status"  ["eval-error"]
              "ex"      (. exc-type --name--)
              "root-ex" (. exc-type --name--)

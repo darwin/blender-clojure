@@ -2,7 +2,7 @@
   sys
   threading
   time
-  hylc
+  hylc.jobs
   [socketserver [ThreadingMixIn TCPServer BaseRequestHandler]])
 
 (import [HyREPL [bencode session]])
@@ -41,7 +41,7 @@
                                                           "session")))
           (when (is self.session None)
             (setv self.session (session.Session))))
-        (hylc.handle_session_message self.session (get m 0) self.request))
+        (hylc.jobs.handle_session_message self.session (get m 0) self.request))
       (print "Client gone" :file sys.stderr))))
 
 

@@ -1,6 +1,5 @@
 import os
 import sys
-import traceback
 
 # make sure you have run ./scripts/install-dependencies.sh
 # we prepend our modules to sys paths to avoid picking
@@ -9,14 +8,18 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, ".."))
 modules_dir = os.path.join(this_dir, "modules")
 lib_dir = os.path.join(root_dir, "lib")
+shared_dir = os.path.join(root_dir, "shared")
 sys.path.insert(0, modules_dir)
+sys.path.insert(0, shared_dir)
 sys.path.insert(0, lib_dir)
 sys.path.insert(0, this_dir)
 
 import hy
 from hy.importer import runhy
 
-import hylc
+import hylc.backtrace
+import hylc.env_info
+import hylc.jobs
 import repl
 
 # import blender
@@ -50,7 +53,7 @@ def exec_hy_file(path):
     try:
         runhy.run_path(path, run_name='__main__')
     except:
-        hylc.present_hy_exception(*sys.exc_info())
+        hylc.backtrace.present_hy_exception(*sys.exc_info())
 
 
 def run_hylang_file(path):
@@ -71,7 +74,7 @@ class ModalTimerOperator(bpy.types.Operator):
     def modal(self, _context, event):
         if event.type == 'TIMER':
             if nrepl_enabled is not None:
-                hylc.process_pending_session_jobs()
+                hylc.jobs.process_pending_session_jobs()
             path = self.watched_file_path
             if os.path.exists(path):
                 statbuf = os.stat(path)
@@ -119,7 +122,7 @@ def run_repl():
 def print_welcome():
     print()
     print("==== hylc watcher =====")
-    print(hylc.describe_environment())
+    print(hylc.env_info.describe_environment())
 
 
 if __name__ == "__main__":
