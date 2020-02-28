@@ -4,7 +4,7 @@
 (defmacro defmacro-g! [&rest a-rest]
   `(defmacro/g! ~@a-rest))
 
-; def some symbols to get cursive indentation working
+; def some fake symbols to get cursive indentation working
 (defmacro def [name &rest a-rest]
   None)
 
@@ -14,3 +14,4 @@
 (def except)
 (def defmacro)
 (def defop)
+(def setv)
