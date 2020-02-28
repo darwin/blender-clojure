@@ -1,0 +1,27 @@
+<component name="ProjectDictionaryState">
+  <dictionary name="darwin">
+    <words>
+      <w>bencode</w>
+      <w>blendfile</w>
+      <w>clojurify</w>
+      <w>defclass</w>
+      <w>defmain</w>
+      <w>defop</w>
+      <w>deftag</w>
+      <w>direnv</w>
+      <w>excepthook</w>
+      <w>exctype</w>
+      <w>hylang</w>
+      <w>hylangfile</w>
+      <w>hylc</w>
+      <w>hyrepl</w>
+      <w>lein</w>
+      <w>livecode</w>
+      <w>nrepl</w>
+      <w>oldout</w>
+      <w>pyversion</w>
+      <w>setv</w>
+      <w>socketserver</w>
+    </words>
+  </dictionary>
+</component>
