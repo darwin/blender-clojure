@@ -27,12 +27,12 @@ export HYLC_NREPL=1
 Then running `blender.sh` should display `nREPL server listening on ('127.0.0.1', 1337)`, see below:
 
 ```text
-> ./scripts/blender.sh examples/aliases.hy
+> ./scripts/blender.sh examples/one-hundred-cubes.hy
 HYLC_BLENDER_PATH=/Applications/Blender.app/Contents/MacOS/Blender
 HYLC_BLENDER_PYTHON_PATH=/Applications/Blender.app/Contents/Resources/2.82/python
-HYLC_LIVE_FILE=/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy
+HYLC_LIVE_FILE=/Users/darwin/lab/blender-hylang-live-code/examples/one-hundred-cubes.hy
 HYLC_NREPL=1
-+ exec /Applications/Blender.app/Contents/MacOS/Blender assets/blank.blend --python /Users/darwin/lab/blender-hylang-live-code/watcher/main.py
++ exec /Applications/Blender.app/Contents/MacOS/Blender assets/blank.blend --python /Users/darwin/lab/blender-hylang-live-code/src/watcher/main.py
 Read prefs: /Users/darwin/Library/Application Support/Blender/2.82/config/userpref.blend
 found bundled python: /Applications/Blender.app/Contents/Resources/2.82/python
 Read blend: /Users/darwin/lab/blender-hylang-live-code/assets/blank.blend
@@ -41,10 +41,10 @@ Read blend: /Users/darwin/lab/blender-hylang-live-code/assets/blank.blend
 hy 0.18.0 using CPython(default) 3.7.4 on Darwin in Blender 2.82 (sub 7)
 nREPL server listening on ('127.0.0.1', 1337)
 
-Watching '/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy' for changes and re-loading.
-Reloading '/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy'
+Watching '/Users/darwin/lab/blender-hylang-live-code/examples/one-hundred-cubes.hy' for changes and re-loading.
+Reloading '/Users/darwin/lab/blender-hylang-live-code/examples/one-hundred-cubes.hy'
 Info: Deleted 0 object(s)
-Done executing '/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy'
+Done executing '/Users/darwin/lab/blender-hylang-live-code/examples/one-hundred-cubes.hy'
 ...
 ```
 
