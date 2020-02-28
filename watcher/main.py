@@ -6,7 +6,7 @@ import sys
 # any possibly existing outdated libs from blender
 this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, ".."))
-modules_dir = os.path.join(this_dir, "modules")
+modules_dir = os.environ.get("HYLC_MODULES_DIR") or os.path.join(root_dir, "_modules")
 lib_dir = os.path.join(root_dir, "lib")
 shared_dir = os.path.join(root_dir, "shared")
 sys.path.insert(0, modules_dir)

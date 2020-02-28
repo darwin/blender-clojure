@@ -24,4 +24,4 @@ cd "$HYLC_BLENDER_PYTHON_PATH"
 # this worked for me on macOS 10.15.4, blender 2.82
 bin/python3.7m -m ensurepip
 bin/python3.7m -m pip install -U pip
-bin/pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}" -t "$WATCHER_DIR/modules"
+bin/pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}" -t "$HYLC_MODULES_DIR"

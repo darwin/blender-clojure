@@ -1,4 +1,4 @@
 .*.swp
 workspace
-watcher/modules
+_modules
 .idea
