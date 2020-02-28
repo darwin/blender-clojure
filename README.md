@@ -36,7 +36,11 @@ HYLC_NREPL=1
 Read prefs: /Users/darwin/Library/Application Support/Blender/2.82/config/userpref.blend
 found bundled python: /Applications/Blender.app/Contents/Resources/2.82/python
 Read blend: /Users/darwin/lab/blender-hylang-live-code/assets/blank.blend
+
+==== hylc watcher =====
+hy 0.18.0 using CPython(default) 3.7.4 on Darwin in Blender 2.82 (sub 7)
 nREPL server listening on ('127.0.0.1', 1337)
+
 Watching '/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy' for changes and re-loading.
 Reloading '/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy'
 Info: Deleted 0 object(s)
@@ -49,7 +53,7 @@ Then in another terminal session you can try to connect with `lein repl` and eva
 ```bash
 > lein repl :connect 1337
 Connecting to nREPL at 127.0.0.1:1337
-hy v0.18
+HyREPL: hy 0.18.0 using CPython(default) 3.7.4 on Darwin in Blender 2.82 (sub 7)
 
 Hy=> (+ 1 2)
 3
