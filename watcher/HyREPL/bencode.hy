@@ -20,17 +20,17 @@
     [(.startswith thing #b"d") (decode-dict (cut thing 1))]
     [(.startswith thing #b"l") (decode-list (cut thing 1))]
     [(.startswith thing #b"i") (decode-int (cut thing 1))]
-    [True ; assume string
-      (let [delim (.find thing #b":")
-            size (int (.decode (cut thing 0 delim) "utf-8"))]
-        (, (.decode (cut thing (inc delim) (+ size (inc delim))) "utf-8")
-           (cut thing (+ size (inc delim)))))]))
+    [True                                                                                                                     ; assume string
+     (let [delim (.find thing #b":")
+           size (int (.decode (cut thing 0 delim) "utf-8"))]
+       (, (.decode (cut thing (inc delim) (+ size (inc delim))) "utf-8")
+        (cut thing (+ size (inc delim)))))]))
 
 
 (defn decode-int [thing]
   (let [end (.find thing #b"e")]
     (, (int (cut thing 0 end) 10)
-       (cut thing (inc end)))))
+     (cut thing (inc end)))))
 
 
 (defn decode-list [thing]
@@ -69,8 +69,8 @@
     [(isinstance thing bytes) (encode-bytes thing)]
     [(isinstance thing dict) (encode-dict thing)]
     [(is thing None) (encode-bytes #b"")]
-    [True ; assume iterable
-      (encode-list thing)]))
+    [True                                                                                                                     ; assume iterable
+     (encode-list thing)]))
 
 
 (defn encode-int [thing]

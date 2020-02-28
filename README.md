@@ -44,7 +44,7 @@ Done executing '/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy'
 ...
 ```
 
-Then in another Terminal session you can try to connect with `lein repl` and eval something:
+Then in another terminal session you can try to connect with `lein repl` and eval something:
 
 ```bash
 > lein repl :connect 1337

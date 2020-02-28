@@ -56,17 +56,17 @@
 (defmain [&rest args]
   (setv port
         (if (> (len args) 0)
-            (try
-              (int (last args))
-              (except [_ ValueError]
-                1337))
-            1337))
+          (try
+            (int (last args))
+            (except [_ ValueError]
+              1337))
+          1337))
   (while True
     (try
-       (start-server "127.0.0.1" port)
-       (except [e OSError]
-         (setv port (inc port)))
-       (else
-         (print (.format "Listening on {}" port) :file sys.stderr)
-         (while True
-           (time.sleep 1))))))
+      (start-server "127.0.0.1" port)
+      (except [e OSError]
+        (setv port (inc port)))
+      (else
+        (print (.format "Listening on {}" port) :file sys.stderr)
+        (while True
+          (time.sleep 1))))))
