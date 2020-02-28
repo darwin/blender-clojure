@@ -18,6 +18,8 @@ from hy.importer import runhy
 from hy.errors import (_tb_hidden_modules)
 
 import backtrace
+import hylc
+import repl
 
 backtrace_opts = {
     'reverse': False,
@@ -32,6 +34,8 @@ backtrace_opts = {
 # import blender
 import bpy
 
+nrepl_enabled = os.environ.get("HYLC_NREPL")
+
 
 def filter_hy_traceback(exc_traceback):
     # frame = (filename, line number, function name*, text)
@@ -41,7 +45,6 @@ def filter_hy_traceback(exc_traceback):
                 os.path.dirname(frame[0]) in _tb_hidden_modules):
             new_tb += [frame]
     return new_tb
-
 
 
 def install_unhandled_exceptions_handler():
@@ -70,14 +73,16 @@ if not os.path.exists(live_file_path):
     print("WARNING: watched file '%s' does not exists" % live_file_path)
 
 
-def run_hylang_file(path):
-    print("Reloading '%s' " % path)
-
+def exec_hy_file(path):
     try:
         runhy.run_path(path, run_name='__main__')
     except:
         present_hy_exception(*sys.exc_info())
 
+
+def run_hylang_file(path):
+    print("Reloading '%s' " % path)
+    exec_hy_file(path)
     print("Done executing '%s'" % path)
 
 
@@ -92,6 +97,8 @@ class ModalTimerOperator(bpy.types.Operator):
 
     def modal(self, _context, event):
         if event.type == 'TIMER':
+            if nrepl_enabled is not None:
+                hylc.process_pending_session_jobs()
             path = self.watched_file_path
             if os.path.exists(path):
                 statbuf = os.stat(path)
@@ -128,7 +135,15 @@ def unregister():
     bpy.app.handlers.frame_change_post.remove(frame_change_handler)
 
 
+def run_repl():
+    if nrepl_enabled is None:
+        return None
+
+    repl.start_server()
+
+
 if __name__ == "__main__":
+    run_repl()
     install_unhandled_exceptions_handler()
     register()
     # test call
