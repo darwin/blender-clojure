@@ -13,7 +13,7 @@ export HYLC_BLENDER_PATH="/path/to/your/blender"
 export HYLC_BLENDER_PYTHON_PATH="/path/to/your/blender/and/its/python"
 ```
 
-* Run `./scripts/install-dependencies.sh` to install the Hy-lang dependencies in a place where Blender's internal Python can find them.
+* Run `./scripts/install-deps.sh` to install the Hy-lang dependencies in a place where Blender's internal Python can find them.
 * Run `./scripts/blender-livecode.sh examples/one-hundred-cubes.hy` to start Blender watching one-hundred-cubes.hy and re-loading it whenever it changes.
 
 ### Connecting via nREPL

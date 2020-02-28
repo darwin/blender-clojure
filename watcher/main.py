@@ -1,7 +1,7 @@
 import os
 import sys
 
-# make sure you have run ./scripts/install-dependencies.sh
+# make sure you have run ./scripts/install-deps.sh or provide your custom HYLC_MODULES_DIR
 # we prepend our modules to sys paths to avoid picking
 # any possibly existing outdated libs from blender
 this_dir = os.path.abspath(os.path.dirname(__file__))
