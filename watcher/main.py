@@ -15,36 +15,14 @@ sys.path.insert(0, this_dir)
 
 import hy
 from hy.importer import runhy
-from hy.errors import (_tb_hidden_modules)
 
-import backtrace
 import hylc
 import repl
-
-backtrace_opts = {
-    'reverse': False,
-    'align': True,
-    'strip_path': True,
-    'enable_on_envvar_only': True,
-    'on_tty': True,
-    'conservative': False,
-    'styles': {}
-}
 
 # import blender
 import bpy
 
 nrepl_enabled = os.environ.get("HYLC_NREPL")
-
-
-def filter_hy_traceback(exc_traceback):
-    # frame = (filename, line number, function name*, text)
-    new_tb = []
-    for frame in traceback.extract_tb(exc_traceback):
-        if not (frame[0].replace('.pyc', '.py') in _tb_hidden_modules or
-                os.path.dirname(frame[0]) in _tb_hidden_modules):
-            new_tb += [frame]
-    return new_tb
 
 
 def install_unhandled_exceptions_handler():
@@ -60,11 +38,6 @@ def install_unhandled_exceptions_handler():
     sys.excepthook = handle_unhandled_exceptions
 
 
-def present_hy_exception(exc_type, value, hy_traceback):
-    filtered_traceback = filter_hy_traceback(hy_traceback)
-    backtrace.hook(tpe=exc_type, value=value, tb=filtered_traceback, **backtrace_opts)
-
-
 live_file_path = os.environ.get("HYLC_LIVE_FILE")
 if live_file_path is None:
     raise Exception("HYLC_LIVE_FILE not specified")
@@ -77,7 +50,7 @@ def exec_hy_file(path):
     try:
         runhy.run_path(path, run_name='__main__')
     except:
-        present_hy_exception(*sys.exc_info())
+        hylc.present_hy_exception(*sys.exc_info())
 
 
 def run_hylang_file(path):
