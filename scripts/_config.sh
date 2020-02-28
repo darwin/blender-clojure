@@ -15,7 +15,7 @@ pushd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null || exit 11
 
 ROOT_DIR=$(pwd -P)
 # shellcheck disable=SC2034
-WATCHER_DIR="$ROOT_DIR/watcher"
+WATCHER_DIR="$ROOT_DIR/src/watcher"
 HYLC_MODULES_DIR=${HYLC_MODULES_DIR:-"$ROOT_DIR/_modules"}
 
 # mac specific

@@ -5,10 +5,10 @@ import sys
 # we prepend our modules to sys paths to avoid picking
 # any possibly existing outdated libs from blender
 this_dir = os.path.abspath(os.path.dirname(__file__))
-root_dir = os.path.abspath(os.path.join(this_dir, ".."))
+root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
 modules_dir = os.environ.get("HYLC_MODULES_DIR") or os.path.join(root_dir, "_modules")
-lib_dir = os.path.join(root_dir, "lib")
-shared_dir = os.path.join(root_dir, "shared")
+lib_dir = os.path.join(root_dir, "src", "lib")
+shared_dir = os.path.join(root_dir, "src", "shared")
 sys.path.insert(0, modules_dir)
 sys.path.insert(0, shared_dir)
 sys.path.insert(0, lib_dir)

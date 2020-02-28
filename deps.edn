@@ -1,4 +1,4 @@
-{:paths ["lib"
-         "shared"
-         "watcher"
+{:paths ["src/lib"
+         "src/shared"
+         "src/watcher"
          "examples"]}
