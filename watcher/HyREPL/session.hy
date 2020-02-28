@@ -1,6 +1,9 @@
 (import sys
+        clojure
         [uuid [uuid4]]
         [threading [Lock]])
+(require [clojure [*]])
+(import [clojure [*]])
 (import
   [HyREPL [bencode]]
   [HyREPL.ops [find-op]]
@@ -36,7 +39,8 @@
   (defn handle [self msg transport]
     (print "in:" msg :file sys.stderr)
     (let [res (hack self msg)]
-      (if res
-        (for [r res]
-          (.write self r transport))
-        ((find-op (.get msg "op")) self msg transport)))))
+      (cond
+        [(list? res) (for [r res]
+                       (.write self r transport))]
+        [(map? res) ((find-op (.get res "op")) self res transport)]
+        [:else ((find-op (.get msg "op")) self msg transport)]))))
