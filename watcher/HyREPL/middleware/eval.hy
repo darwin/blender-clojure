@@ -17,21 +17,22 @@
 
 (setv eval-module (types.ModuleType "__main__")) ; Module context for evaluations
 
-;(defn format-excp [self trace]
-;  (let [exc-type (first trace)
-;        exc-value (second trace)
-;        exc-traceback (get trace 2)]
-;    (setv self.session.last-traceback exc-traceback)
-;    (traceback.print_tb exc-traceback)
-;    (self.writer {"status" ["eval-error"]
-;                  "ex" (. exc-type --name--)
-;                  "root-ex" (. exc-type --name--)
-;                  "id" (.get self.msg "id")})
-;    (when (instance? LexException exc-value)
-;      (when (is exc-value.source None)
-;        (setv exc-value.source ""))
-;      (setv exc-value (.format "LexException: {}" exc-value.message)))
-;    (self.writer {"err" (str (.strip (str exc-value) "\n"))})))
+(defn format-exception [session msg writer trace]
+  (let [exc-type (first trace)
+        exc-value (second trace)
+        exc-traceback (get trace 2)]
+    (setv session.last-traceback exc-traceback)
+    (traceback.print_tb exc-traceback)
+    (writer {"status"  ["eval-error"]
+             "ex"      (. exc-type --name--)
+             "root-ex" (. exc-type --name--)
+             "id"      (.get msg "id")})
+    ; TODO: deal with LexException cases later
+    ;(when (instance? LexException exc-value)
+    ;  (when (is exc-value.source None)
+    ;    (setv exc-value.source ""))
+    ;  (setv exc-value (.format "LexException: {}" exc-value.message)))
+    (writer {"err" (+ (.strip (str exc-value)) "\n")})))
 
 (defop eval [session msg transport]
        {"doc" "Evaluates code."
@@ -58,9 +59,8 @@
           ]
       (try
         (setv tokens (tokenize code))
-        (except [e Exception]
-          (print "EX!")
-          ;(.format-excp self (sys.exc-info))
+        (except []
+          (format-exception session msg writer (sys.exc-info))
           (writer {"status" ["done"] "id" (.get msg "id")}))
         (else
           (for [i tokens]
@@ -73,10 +73,9 @@
                                             (. eval-module --dict--))
                                           "__main__")]
                     (.write p (str eval-res))))
-                (except [e Exception]
+                (except []
                   (setv sys.stdout oldout)
-                  (print "EX2!"))
-                  ;(.format-excp self (sys.exc-info)))
+                  (format-exception session msg writer (sys.exc-info)))
                 (else
                   (when (and (= (.getvalue p) "None") (bool (.getvalue sys.stdout)))
                     (writer {"out" (.getvalue sys.stdout)}))
