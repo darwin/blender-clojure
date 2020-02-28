@@ -5,6 +5,7 @@
 
 (import sys)
 (require [hy.contrib.walk [let]])
+(import [HyREPL.utils [make-version]])
 
 
 (setv ops {})
@@ -66,13 +67,6 @@
          (del (get sessions (.get msg "session" "")))
          (except [e KeyError]))
        (.close transport))
-
-
-(defn make-version [&optional [major 0] [minor 0] [incremental 0]]
-  {"major" major
-   "minor" minor
-   "incremental" incremental
-   "version-string" (.join "." (map str [major minor incremental]))})
 
 
 (defop describe [session msg transport]
