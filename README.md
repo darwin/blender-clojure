@@ -14,7 +14,7 @@ export HYLC_BLENDER_PYTHON_PATH="/path/to/your/blender/and/its/python"
 ```
 
 * Run `./scripts/install-deps.sh` to install the Hy-lang dependencies in a place where Blender's internal Python can find them.
-* Run `./scripts/blender-livecode.sh examples/one-hundred-cubes.hy` to start Blender watching one-hundred-cubes.hy and re-loading it whenever it changes.
+* Run `./scripts/blender.sh examples/one-hundred-cubes.hy` to start Blender watching one-hundred-cubes.hy and re-loading it whenever it changes.
 
 ### Connecting via nREPL
 
@@ -24,10 +24,10 @@ First you have to enable it via env:
 export HYLC_NREPL=1
 ```
 
-Then running blender-livecode.sh should display `nREPL server listening on ('127.0.0.1', 1337)`, see example:
+Then running `blender.sh` should display `nREPL server listening on ('127.0.0.1', 1337)`, see below:
 
 ```text
-> ./scripts/blender-livecode.sh examples/aliases.hy
+> ./scripts/blender.sh examples/aliases.hy
 HYLC_BLENDER_PATH=/Applications/Blender.app/Contents/MacOS/Blender
 HYLC_BLENDER_PYTHON_PATH=/Applications/Blender.app/Contents/Resources/2.82/python
 HYLC_LIVE_FILE=/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy
