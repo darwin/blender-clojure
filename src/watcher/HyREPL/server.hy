@@ -19,48 +19,50 @@
     (print "New client" :file sys.stderr)
     (let [buf (bytearray)
           tmp None
-          msg (,)]
+          msg None]
       (while True
+        ; receive data
         (try
           (setv tmp (.recv self.request 1024))
           (except [e OSError]
             (break)))
-        (when (= (len tmp) 0)
+        (if (= (len tmp) 0)
           (break))
         (.extend buf tmp)
+        ; decode buffer
         (try
-          (do
-            (setv m (bencode.decode buf))
+          (let [decoded (bencode.decode buf)
+                _ (setv msg (get decoded 0))
+                rest (get decoded 1)]
             (.clear buf)
-            (.extend buf (get m 1)))
+            (.extend buf rest))
           (except [e Exception]
             (print e :file sys.stderr)
             (continue)))
-        (when (is self.session None)
-          (setv self.session (.get session.sessions (.get (get m 0)
-                                                          "session")))
-          (when (is self.session None)
-            (setv self.session (session.Session))))
-        (hylc.jobs.handle_session_message self.session (get m 0) self.request))
-      (print "Client gone" :file sys.stderr))))
+        ; setup session
+        (if-not self.session
+          (setv self.session (or (.get session.sessions (.get msg "session"))
+                                 (session.Session))))
+        ; request session job
+        (hylc.jobs.handle_session_message self.session msg self.request)))
+    (print "Client gone" :file sys.stderr)))
 
 
-(defn start-server [&optional [ip "127.0.0.1"] [port 1337]]
-  (let [s (ReplServer (, ip port) ReplRequestHandler)
+(defn start-server [&optional [host "127.0.0.1"] [port 1337]]
+  (let [s (ReplServer (, host port) ReplRequestHandler)
         t (threading.Thread :target s.serve-forever)]
     (setv t.daemon True)
     (.start t)
     (, t s)))
 
+(defn read-port-from-args [args]
+  (if (> (len args) 0)
+    (try
+      (int (last args))
+      (except [_ ValueError]))))
 
 (defmain [&rest args]
-  (setv port
-        (if (> (len args) 0)
-          (try
-            (int (last args))
-            (except [_ ValueError]
-              1337))
-          1337))
+  (setv port (or (read-port-from-args args) 1337))
   (while True
     (try
       (start-server "127.0.0.1" port)
