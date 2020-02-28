@@ -1,4 +1,7 @@
 import time
+import sys
+import hy
+import bpy
 
 pending_session_jobs = []
 
@@ -32,3 +35,15 @@ def handle_session_message(session, msg, request):
         time.sleep(0.03)
 
     return fut["result"]
+
+
+def describe_environment():
+    import platform
+    return "{appname} {version} using {py}({build}) {pyversion} on {os} in Blender {blender}".format(
+        appname=hy.__appname__,
+        version=hy.__version__,
+        py=platform.python_implementation(),
+        build=platform.python_build()[0],
+        pyversion=platform.python_version(),
+        os=platform.system(),
+        blender=bpy.app.version_string)

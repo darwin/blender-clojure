@@ -1,4 +1,5 @@
 (require [hy.contrib.walk [let]])
+(import [HyREPL.utils [prepare-version-and-env-info]])
 
 ; here we emulate interactions with various nREPL clients:
 ; - lein repl :connect
@@ -24,7 +25,7 @@
 (defn reply-cursive-3 [session msg]
   [{"id"      (.get msg "id")
     "session" (.get msg "session")
-    "out"     "hylang\n"}
+    "out"     (.format "{}\n\n" (prepare-version-and-env-info))}
    {"id"      (.get msg "id")
     "session" (.get msg "session")
     "status"  ["done"]}])
@@ -41,7 +42,7 @@
 (defn reply-lein-intro [session msg]
   [{"id"      (.get msg "id")
     "session" (.get msg "session")
-    "out"     "hy v0.18\n\n"}
+    "out"     (.format "{}\n\n" (prepare-version-and-env-info))}
    {"id"      (.get msg "id")
     "session" (.get msg "session")
     "ns"      "Hy"
