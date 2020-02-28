@@ -126,7 +126,7 @@
       (setv session.repl
             (InterruptibleEval msg session
                                (fn [x]
-                                 (assoc x "id" (.get msg "id"))
+                                 (assoc x "id" (.get msg "id") "session" (get msg "session"))
                                  (.write session x transport))))
       (.start session.repl))))
 
