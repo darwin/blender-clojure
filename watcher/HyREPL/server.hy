@@ -6,9 +6,7 @@
   [socketserver [ThreadingMixIn TCPServer BaseRequestHandler]])
 
 (import [HyREPL [bencode session]])
-
-; TODO: move these includes somewhere else
-(import [HyREPL.middleware [test eval complete info]])
+(import [HyREPL.middleware [eval]])
 
 (require [hy.contrib.walk [let]])
 
