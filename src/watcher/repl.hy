@@ -9,9 +9,10 @@
 (setv (. repl-mw eval-module) (globals))
 
 (defn parse-port-from-env [port-str]
-  (try
-    (int port-str)
-    (except [_ ValueError])))
+  (if port-str
+    (try
+      (int port-str)
+      (except [_ ValueError]))))
 
 (defn format-server-address [host port]
   (.format "{}:{}" host port))
