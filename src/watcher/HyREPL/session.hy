@@ -1,13 +1,11 @@
 (import sys
         clojure
-        [uuid [uuid4]]
-        [threading [Lock]])
+        [uuid [uuid4]])
 (require [clojure [*]])
 (import [clojure [*]])
-(import
-  [HyREPL [bencode]]
-  [HyREPL.ops [find-op]]
-  [HyREPL.hacks [hack]])
+(import [HyREPL [bencode]]
+        [HyREPL.ops [find-op]]
+        [HyREPL.hacks [hack]])
 (require [hy.contrib.walk [let]])
 
 (setv sessions {})
@@ -21,7 +19,6 @@
   (defn --init-- [self]
     (setv self.uuid (str (uuid4)))
     (assoc sessions self.uuid self)
-    (setv self.lock (Lock))
     None)
   (defn --str-- [self]
     self.uuid)
