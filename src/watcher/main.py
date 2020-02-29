@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 # make sure you have run ./scripts/install-deps.sh or provide your custom HYLC_MODULES_DIR
 # we prepend our modules to sys paths to avoid picking
@@ -26,6 +27,10 @@ import repl
 import bpy
 
 nrepl_enabled = os.environ.get("HYLC_NREPL")
+nrepl_server = None
+
+last_good_stdout = sys.stdout
+last_good_stderr = sys.stderr
 
 
 def install_unhandled_exceptions_handler():
@@ -34,6 +39,12 @@ def install_unhandled_exceptions_handler():
     def handle_unhandled_exceptions(exc_type, exc_value, exc_traceback):
         if exc_type is KeyboardInterrupt:
             # hard exit
+            sys.stdout = last_good_stdout
+            sys.stderr = last_good_stderr
+            print("got KeyboardInterrupt")
+            stop_nrepl()
+            sys.stdout.flush()
+            sys.stderr.flush()
             sys.exit(1)
         else:
             orig_excepthook(exc_type, exc_value, exc_traceback)
@@ -111,12 +122,27 @@ def unregister():
     bpy.app.handlers.frame_change_post.remove(frame_change_handler)
 
 
-def run_repl():
+def start_nrepl():
+    global nrepl_server
+
     if nrepl_enabled is None:
         return None
 
-    repl.start_server()
+    nrepl_server = repl.start_server()
     print()
+
+
+def stop_nrepl():
+    global nrepl_server
+
+    if nrepl_enabled is None:
+        return None
+
+    if nrepl_server is None:
+        return None
+
+    repl.shutdown_server(nrepl_server)
+    nrepl_server = None
 
 
 def print_welcome():
@@ -127,7 +153,7 @@ def print_welcome():
 
 if __name__ == "__main__":
     print_welcome()
-    run_repl()
+    start_nrepl()
     install_unhandled_exceptions_handler()
     register()
     # test call

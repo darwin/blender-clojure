@@ -11,22 +11,24 @@
 (require [hy.contrib.walk [let]])
 
 (defclass ReplServer [ThreadingMixIn TCPServer]
-  (setv allow-reuse-address True))
+  (setv allow-reuse-address True)
+  (setv daemon_threads True))
 
 (defclass ReplRequestHandler [BaseRequestHandler]
   (setv session None)
   (defn handle [self]
-    (print "New client" :file sys.stderr)
+    (print "New client" self.request :file sys.stderr)
     (let [buf (bytearray)
+          transport self.request
           tmp None
           msg None]
       (while True
         ; receive data
         (try
-          (setv tmp (.recv self.request 1024))
+          (setv tmp (.recv transport 1024))
           (except [e OSError]
             (break)))
-        (if (= (len tmp) 0)
+        (when (zero? (len tmp))
           (break))
         (.extend buf tmp)
         ; decode buffer
@@ -44,8 +46,8 @@
           (setv self.session (or (.get session.sessions (.get msg "session"))
                                  (session.Session))))
         ; request session job
-        (hylc.jobs.handle_session_message self.session msg self.request)))
-    (print "Client gone" :file sys.stderr)))
+        (hylc.jobs.handle_session_message self.session msg transport)))
+    (print "Client gone" self.request :file sys.stderr)))
 
 
 (defn start-server [&optional [host "127.0.0.1"] [port 1337]]
@@ -54,6 +56,12 @@
     (setv t.daemon True)
     (.start t)
     (, t s)))
+
+(defn shutdown-server [server]
+  (let [t (first server)
+        s (second server)]
+    (.shutdown s)
+    (.server_close s)))
 
 (defn read-port-from-args [args]
   (if (> (len args) 0)

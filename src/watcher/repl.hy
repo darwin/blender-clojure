@@ -13,6 +13,9 @@
     (int port-str)
     (except [_ ValueError])))
 
+(defn format-server-address [host port]
+  (.format "{}:{}" host port))
+
 (defn start-server []
   (let [env-host (os.environ.get "HYLC_NREPL_HOST")
         env-port (os.environ.get "HYLC_NREPL_PORT")
@@ -20,5 +23,10 @@
         port (or (parse-port-from-env env-port) 1337)
         nrepl-server (repl-server.start-server host port)
         tcp-server (second nrepl-server)]
-    (print (.format "nREPL server listening on {}" (. tcp-server server-address)))
+    (print (.format "nREPL server listening on {}" (format-server-address #* (. tcp-server server-address))))
     nrepl-server))
+
+(defn shutdown-server [nrepl-server]
+  (let [tcp-server (second nrepl-server)]
+    (print (.format "Shutting down nREPL server {}..." (format-server-address #* (. tcp-server server-address))))
+    (repl-server.shutdown-server nrepl-server)))
