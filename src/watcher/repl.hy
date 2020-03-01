@@ -18,8 +18,8 @@
   (.format "{}:{}" host port))
 
 (defn start-server []
-  (let [env-host (os.environ.get "BCLJ_NREPL_HOST")
-        env-port (os.environ.get "BCLJ_NREPL_PORT")
+  (let [env-host (os.environ.get "BCLJ_HYLANG_NREPL_HOST")
+        env-port (os.environ.get "BCLJ_HYLANG_NREPL_PORT")
         host (or env-host "127.0.0.1")
         port (or (parse-port-from-env env-port) 1337)
         nrepl-server (repl-server.start-server host port)

@@ -25,7 +25,11 @@ If you want to be closer to bare python you can opt-in to use hylang.
 First you have to enable it via env: 
 
 ```bash
-export BCLJ_NREPL=1
+export BCLJ_HYLANG_NREPL=1
+
+# optionally export:
+#export BCLJ_HYLANG_NREPL_HOST=localhost
+#export BCLJ_HYLANG_NREPL_PORT=1338
 ```
 
 Then running `blender.sh` should display `nREPL server listening on ('127.0.0.1', 1337)`, see below:
@@ -35,7 +39,7 @@ Then running `blender.sh` should display `nREPL server listening on ('127.0.0.1'
 BCLJ_BLENDER_PATH=/Applications/Blender.app/Contents/MacOS/Blender
 BCLJ_BLENDER_PYTHON_PATH=/Applications/Blender.app/Contents/Resources/2.82/python
 BCLJ_LIVE_FILE=/Users/darwin/lab/blender-hylang-live-code/examples/one-hundred-cubes.hy
-BCLJ_NREPL=1
+BCLJ_HYLANG_NREPL=1
 + exec /Applications/Blender.app/Contents/MacOS/Blender assets/blank.blend --python /Users/darwin/lab/blender-hylang-live-code/src/watcher/main.py
 Read prefs: /Users/darwin/Library/Application Support/Blender/2.82/config/userpref.blend
 found bundled python: /Applications/Blender.app/Contents/Resources/2.82/python

@@ -30,7 +30,7 @@ import repl
 # import blender
 import bpy
 
-nrepl_enabled = os.environ.get("BCLJ_NREPL")
+nrepl_enabled = os.environ.get("BCLJ_HYLANG_NREPL")
 nrepl_server = None
 
 import js
