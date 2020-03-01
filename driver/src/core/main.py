@@ -14,6 +14,11 @@ import repl
 
 # import blender
 import bpy
+import logging
+
+from core import log
+
+logger = logging.getLogger("bclj")
 
 nrepl_enabled = os.environ.get("BCLJ_HYLANG_NREPL")
 nrepl_server = None
@@ -21,11 +26,9 @@ nrepl_server = None
 import js
 
 live_file_path = os.environ.get("BCLJ_LIVE_FILE")
-if live_file_path is None:
-    raise Exception("BCLJ_LIVE_FILE not specified")
-
-if not os.path.exists(live_file_path):
-    print("WARNING: watched file '%s' does not exists" % live_file_path)
+if live_file_path is not None:
+    if not os.path.exists(live_file_path):
+        logger.warning("live file '%s' does not exists" % live_file_path)
 
 
 def exec_hy_file(path):
@@ -36,9 +39,9 @@ def exec_hy_file(path):
 
 
 def run_hylang_file(path):
-    print("Reloading '%s' " % path)
+    logger.info("Reloading '{}' ".format(log.colorize_file(path)))
     exec_hy_file(path)
-    print("Done executing '%s'" % path)
+    logger.info("Done executing '{}'".format(path))
 
 
 class ModalTimerOperator(bpy.types.Operator):
@@ -55,12 +58,14 @@ class ModalTimerOperator(bpy.types.Operator):
             worker.drain_asyncio_event_loop()
             if nrepl_enabled is not None:
                 jobs.process_pending_session_jobs()
+
             path = self.watched_file_path
-            if os.path.exists(path):
-                statbuf = os.stat(path)
-                if statbuf.st_mtime > self.last_check:
-                    self.last_check = statbuf.st_mtime
-                    run_hylang_file(path)
+            if path is not None:
+                if os.path.exists(path):
+                    statbuf = os.stat(path)
+                    if statbuf.st_mtime > self.last_check:
+                        self.last_check = statbuf.st_mtime
+                        run_hylang_file(path)
 
         return {'PASS_THROUGH'}
 
@@ -68,17 +73,20 @@ class ModalTimerOperator(bpy.types.Operator):
         wm = context.window_manager
         self._timer = wm.event_timer_add(0.1, window=context.window)
         wm.modal_handler_add(self)
-        print("Watching '%s' for changes and re-loading." % self.watched_file_path)
+        if self.watched_file_path is not None:
+            logger.info("Watching '{}' for changes and re-loading.".format(log.colorize_file(self.watched_file_path)))
         return {'RUNNING_MODAL'}
 
     def cancel(self, context):
         wm = context.window_manager
         wm.event_timer_remove(self._timer)
-        print("Finished watching '%s'" % self.watched_file_path)
+        if self.watched_file_path is not None:
+            logger.info("Finished watching '{}'".format(log.colorize_file(self.watched_file_path)))
 
 
 def frame_change_handler(_scene):
-    run_hylang_file(live_file_path)
+    if live_file_path is not None:
+        run_hylang_file(live_file_path)
 
 
 def register():
@@ -98,7 +106,6 @@ def start_nrepl():
         return None
 
     nrepl_server = repl.start_server()
-    print()
 
 
 def stop_nrepl():
