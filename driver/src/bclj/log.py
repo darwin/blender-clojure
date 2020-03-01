@@ -78,7 +78,9 @@ def init():
 
     logger = logging.getLogger("bclj")
     # TODO: make this configurable
-    logger.setLevel(logging.DEBUG)
+    debug = os.environ.get("BCLJ_DEBUG")
+    if debug is not None:
+        logger.setLevel(logging.DEBUG)
 
     root_logger = logging.getLogger()
     handler = logging.StreamHandler(sys.stdout)

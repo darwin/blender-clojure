@@ -7,6 +7,25 @@ if [[ $1 == "-h" || $1 == "--help" ]]; then
   exit 0
 fi
 
+# poor man's bash flags parsing
+# https://stackoverflow.com/a/14203146/84283
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+  -d | --debug)
+    DEBUG=1
+    shift
+    ;;
+  *) # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift              # past argument
+    ;;
+  esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
 set -e -o pipefail
 # shellcheck source=_config.sh
 source "$(dirname "${BASH_SOURCE[0]}")/_config.sh"
@@ -22,13 +41,17 @@ fi
 
 cd "$ROOT_DIR"
 
+if [[ -n "$DEBUG" ]]; then
+  export BCLJ_DEBUG=1
+fi
+
 BLENDER_FILE=${2:-assets/blank.blend}
 
 export ENABLE_BACKTRACE=1
 
 echo "BCLJ_BLENDER_PATH=$BCLJ_BLENDER_PATH"
 echo "BCLJ_BLENDER_PYTHON_PATH=$BCLJ_BLENDER_PYTHON_PATH"
-env | grep BCLJ_ | grep -v BCLJ_BLENDER_PATH | grep -v BCLJ_BLENDER_PYTHON_PATH
+env | grep BCLJ_ | grep -v BCLJ_BLENDER_PATH | grep -v BCLJ_BLENDER_PYTHON_PATH || true
 
 set -x
 exec "$BCLJ_BLENDER_PATH" "$BLENDER_FILE" --python "$DRIVER_ENTRY_POINT"
