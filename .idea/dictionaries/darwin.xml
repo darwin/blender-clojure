@@ -8,6 +8,7 @@
       <w>blendfile</w>
       <w>cljs</w>
       <w>clojurify</w>
+      <w>cpython</w>
       <w>ctxt</w>
       <w>defclass</w>
       <w>defmain</w>
@@ -16,6 +17,7 @@
       <w>direnv</w>
       <w>excepthook</w>
       <w>exctype</w>
+      <w>homebrew</w>
       <w>hylang</w>
       <w>hylangfile</w>
       <w>hylc</w>
@@ -34,6 +36,7 @@
       <w>shortlevelname</w>
       <w>shortname</w>
       <w>socketserver</w>
+      <w>stpyv</w>
       <w>websockets</w>
       <w>wsock</w>
     </words>
