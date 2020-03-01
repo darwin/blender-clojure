@@ -2,7 +2,7 @@
   sys
   threading
   time
-  jobs
+  bclj.jobs
   [socketserver [ThreadingMixIn TCPServer BaseRequestHandler]])
 
 (import [HyREPL [bencode session]])

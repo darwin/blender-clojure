@@ -1,29 +1,20 @@
-import boot
 import os
 import sys
 import time
-import worker
 
 import hy
 from hy.importer import runhy
 
-import backtrace
-import env_info
-import jobs
-import repl
+import logging
+from bclj import repl, jobs, env_info, backtrace, log, worker, js
 
 # import blender
 import bpy
-import logging
-
-from core import log
 
 logger = logging.getLogger("bclj")
 
 nrepl_enabled = os.environ.get("BCLJ_HYLANG_NREPL")
 nrepl_server = None
-
-import js
 
 live_file_path = os.environ.get("BCLJ_LIVE_FILE")
 if live_file_path is not None:

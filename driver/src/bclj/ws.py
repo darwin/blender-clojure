@@ -2,7 +2,7 @@ import asyncio
 import websockets
 import STPyV8
 import logging
-import v8
+from bclj import v8
 
 logger = logging.getLogger('bclj.websockets')
 

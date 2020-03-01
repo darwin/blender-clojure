@@ -1,11 +1,7 @@
-import inspect
 import os
 import sys
-import thug
-import bpy
 import logging
-import v8
-import log
+from bclj import log, v8, thug
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", "..", ".."))
@@ -53,6 +49,7 @@ root.Node = thug.Node(root.doc)
 root.foreignConsole = Console()
 root.importScripts = import_scripts
 root.reportEvalError = report_eval_error
+assert sys.modules['bpy']
 root.bpy = sys.modules['bpy']
 root.window = root
 

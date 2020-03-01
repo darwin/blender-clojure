@@ -3,7 +3,7 @@
         [io [StringIO]])
 (import ctypes)
 (import traceback)
-(import backtrace)
+(import bclj.backtrace)
 (import
   [hy.lex [tokenize]]
   [hy.lex.exceptions [LexException]])

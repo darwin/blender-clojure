@@ -18,4 +18,4 @@ sys.path.insert(0, modules_v8_dir)
 sys.path.insert(0, hylib_dir)
 sys.path.insert(0, this_dir)
 
-import core
+import bclj

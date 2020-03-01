@@ -1,7 +1,8 @@
 import copy
 import os
 import sys
-import log
+
+from bclj import log
 
 
 def install_unhandled_exceptions_handler():
@@ -25,5 +26,6 @@ def install_unhandled_exceptions_handler():
     sys.excepthook = handle_unhandled_exceptions
 
 
-log.init()
-install_unhandled_exceptions_handler()
+def init():
+    log.init()
+    install_unhandled_exceptions_handler()

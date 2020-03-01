@@ -5,8 +5,7 @@ import sys
 import logging
 import colorama
 
-is_tty = sys.stdout.isatty()
-colorize_output = is_tty and os.environ.get("BCLJ_NO_COLOR") is None
+colorize_output = True
 
 
 def colorize(color, s):
@@ -72,6 +71,11 @@ class LogFormatter(logging.Formatter):
 
 
 def init():
+    global colorize_output
+    is_tty = sys.stdout.isatty()
+    no_color = os.environ.get("BCLJ_NO_COLOR")
+    colorize_output = is_tty and no_color is None
+
     logger = logging.getLogger("bclj")
     # TODO: make this configurable
     logger.setLevel(logging.DEBUG)

@@ -22,8 +22,7 @@ import sched
 
 sched = sched.scheduler(time.time, time.sleep)
 
-import ws
-import v8
+from bclj import ws, v8
 
 JSClass = v8.JSClass
 
