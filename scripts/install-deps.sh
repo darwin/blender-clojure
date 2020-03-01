@@ -23,9 +23,9 @@ KNOWN_PYTHON_DEPS=(
 cd "$ROOT_DIR"
 
 set -x
-cd "$HYLC_BLENDER_PYTHON_PATH"
+cd "$BCLJ_BLENDER_PYTHON_PATH"
 
 # this worked for me on macOS 10.15.4, blender 2.82
 bin/python3.7m -m ensurepip
 bin/python3.7m -m pip install -U pip
-bin/pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}" -t "$HYLC_MODULES_DIR"
+bin/pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}" -t "$BCLJ_MODULES_DIR"

@@ -2,6 +2,7 @@
   <dictionary name="darwin">
     <words>
       <w>asyncio</w>
+      <w>bclj</w>
       <w>bencode</w>
       <w>bencoded</w>
       <w>blendfile</w>
@@ -19,6 +20,7 @@
       <w>hylangfile</w>
       <w>hylc</w>
       <w>hyrepl</w>
+      <w>intelli</w>
       <w>iowait</w>
       <w>lein</w>
       <w>livecode</w>

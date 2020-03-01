@@ -2,13 +2,13 @@ import os
 import sys
 import time
 
-# make sure you have run ./scripts/install-deps.sh or provide your custom HYLC_MODULES_DIR
+# make sure you have run ./scripts/install-deps.sh or provide your custom BCLJ_MODULES_DIR
 # we prepend our modules to sys paths to avoid picking
 # any possibly existing outdated libs from blender
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
-modules_dir = os.environ.get("HYLC_MODULES_DIR") or os.path.join(root_dir, "_modules")
+modules_dir = os.environ.get("BCLJ_MODULES_DIR") or os.path.join(root_dir, "_modules")
 lib_dir = os.path.join(root_dir, "src", "lib")
 shared_dir = os.path.join(root_dir, "src", "shared")
 sys.path.insert(0, modules_dir)
@@ -30,14 +30,14 @@ import repl
 # import blender
 import bpy
 
-nrepl_enabled = os.environ.get("HYLC_NREPL")
+nrepl_enabled = os.environ.get("BCLJ_NREPL")
 nrepl_server = None
 
 import js
 
-live_file_path = os.environ.get("HYLC_LIVE_FILE")
+live_file_path = os.environ.get("BCLJ_LIVE_FILE")
 if live_file_path is None:
-    raise Exception("HYLC_LIVE_FILE not specified")
+    raise Exception("BCLJ_LIVE_FILE not specified")
 
 if not os.path.exists(live_file_path):
     print("WARNING: watched file '%s' does not exists" % live_file_path)
