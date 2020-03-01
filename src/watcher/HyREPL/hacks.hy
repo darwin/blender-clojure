@@ -44,7 +44,7 @@
 
 ; Cursive: when using Send '...' to REPL, Cursive adds meta data about originating file
 ; e.g.
-; {'code': '^{:clojure.core/eval-file "/Users/darwin/lab/blender-hylang-live-code/examples/aliases.hy" :line 5 :column 1} (clear)',
+; {'code': '^{:clojure.core/eval-file "/Users/darwin/lab/blender-clojure/examples/aliases.hy" :line 5 :column 1} (clear)',
 ;  'id': 'c2c82812-6f81-494e-83ff-f05f50e24a8e',
 ;  'op': 'eval',
 ;  'session': '765296a2-a453-404e-a625-becf0adde045'}

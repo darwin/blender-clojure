@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/blender-hylang-live-code.iml" filepath="$PROJECT_DIR$/blender-hylang-live-code.iml" />
+      <module fileurl="file://$PROJECT_DIR$/blender-clojure.iml" filepath="$PROJECT_DIR$/blender-clojure.iml" />
       <module fileurl="file://$PROJECT_DIR$/projects/shadow/shadow.iml" filepath="$PROJECT_DIR$/projects/shadow/shadow.iml" />
     </modules>
   </component>
