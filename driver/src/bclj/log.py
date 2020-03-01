@@ -77,9 +77,10 @@ def init():
     colorize_output = is_tty and no_color is None
 
     logger = logging.getLogger("bclj")
-    # TODO: make this configurable
     debug = os.environ.get("BCLJ_DEBUG")
-    if debug is not None:
+    if debug is None:
+        logger.setLevel(logging.INFO)
+    else:
         logger.setLevel(logging.DEBUG)
 
     root_logger = logging.getLogger()

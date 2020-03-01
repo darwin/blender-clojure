@@ -15,7 +15,11 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -d | --debug)
-    DEBUG=1
+    ENABLE_DEBUG=1
+    shift
+    ;;
+  -y | --hyrepl)
+    ENABLE_HYREPL=1
     shift
     ;;
   *) # unknown option
@@ -41,8 +45,12 @@ fi
 
 cd "$ROOT_DIR"
 
-if [[ -n "$DEBUG" ]]; then
+if [[ -n "$DEBUG" || -n "$ENABLE_DEBUG" ]]; then
   export BCLJ_DEBUG=1
+fi
+
+if [[ -n "$ENABLE_HYREPL" ]]; then
+  export BCLJ_HYLANG_NREPL=1
 fi
 
 BLENDER_FILE=${2:-assets/blank.blend}

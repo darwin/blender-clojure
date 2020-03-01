@@ -5,7 +5,7 @@
         [HyREPL.middleware.eval :as repl-mw])
 (require [hy.contrib.walk [let]])
 
-(setv logger (logging.getLogger "bclj.repl"))
+(setv logger (logging.getLogger "bclj.hyrepl"))
 
 (setv default-host "127.0.0.1")
 (setv default-port 1337)

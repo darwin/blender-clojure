@@ -6,7 +6,7 @@ import hy
 from hy.importer import runhy
 
 import logging
-from bclj import repl, jobs, env_info, backtrace, log, worker, js
+from bclj import hyrepl, jobs, env_info, backtrace, log, worker, js
 
 # import blender
 import bpy
@@ -14,7 +14,7 @@ import bpy
 logger = logging.getLogger("bclj")
 
 nrepl_enabled = os.environ.get("BCLJ_HYLANG_NREPL")
-nrepl_server = None
+hyrepl_server = None
 
 live_file_path = os.environ.get("BCLJ_LIVE_FILE")
 if live_file_path is not None:
@@ -91,25 +91,25 @@ def unregister():
 
 
 def start_nrepl():
-    global nrepl_server
+    global hyrepl_server
 
     if nrepl_enabled is None:
         return None
 
-    nrepl_server = repl.start_server()
+    hyrepl_server = hyrepl.start_server()
 
 
 def stop_nrepl():
-    global nrepl_server
+    global hyrepl_server
 
     if nrepl_enabled is None:
         return None
 
-    if nrepl_server is None:
+    if hyrepl_server is None:
         return None
 
-    repl.shutdown_server(nrepl_server)
-    nrepl_server = None
+    hyrepl.shutdown_server(hyrepl_server)
+    hyrepl_server = None
 
 
 def print_welcome():
