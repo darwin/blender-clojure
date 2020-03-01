@@ -1,5 +1,5 @@
 (require [hy.contrib.walk [let]])
-(import [hylc.env-info [describe-environment]])
+(import [env-info [describe-environment]])
 
 (defn make-version [&optional [major 0] [minor 0] [incremental 0]]
   {"major"          major

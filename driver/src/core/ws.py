@@ -9,17 +9,29 @@ logger = logging.getLogger('bclj.websockets')
 from threading import Thread
 
 
-def start_server_loop(loop):
-    logger.debug("starting websockets server loop {}".format(loop))
+def server_loop_thread(loop):
     asyncio.set_event_loop(loop)
     loop.set_debug(True)
+    logger.debug("Entering websockets server loop {}".format(loop))
     loop.run_forever()
 
 
-server_loop = asyncio.new_event_loop()
-t = Thread(target=start_server_loop, args=(server_loop,))
-t.daemon = True
-t.start()
+def start_server_loop():
+    loop = asyncio.new_event_loop()
+    t = Thread(target=server_loop_thread, args=(loop,))
+    t.name = "ws-asyncio"
+    t.daemon = True
+    t.start()
+    return loop
+
+
+server_loop = None
+
+
+def start_server_loop_if_needed():
+    global server_loop
+    if server_loop is None:
+        server_loop = start_server_loop()
 
 
 class MessageEvent(v8.JSClass):
@@ -36,12 +48,12 @@ def abbreviate_message_for_log(msg):
 
 
 def execute_callback(context, code, *args):
+    assert (isinstance(code, STPyV8.JSFunction))
     with context as ctx:
         try:
-            assert (isinstance(code, STPyV8.JSFunction))
             code(*args)
         except Exception as e:
-            print("Error while handling websocket callback", e)
+            logger.error("Error while handling websocket callback:\n{}".format(e))
             return None
 
 
@@ -83,7 +95,13 @@ class WebSocket(object):
         self.onerror = None
         # noinspection PyUnresolvedReferences
         self.window = self.__class__.window
-        asyncio.run_coroutine_threadsafe(client_loop(self), server_loop)
+
+        start_server_loop_if_needed()
+
+        def start_client_loop():
+            asyncio.ensure_future(client_loop(self))
+
+        server_loop.call_soon_threadsafe(start_client_loop)
 
     def send(self, msg):
         asyncio.run_coroutine_threadsafe(client_send(self, msg), server_loop)

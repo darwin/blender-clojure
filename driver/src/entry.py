@@ -1,3 +1,7 @@
+print()
+print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+print("Starting blender-clojure driver...")
+
 # make sure you have run ./scripts/install-deps.sh or provide your custom BCLJ_MODULES_DIR
 # we prepend our modules to sys paths to avoid picking
 # any possibly existing outdated libs from blender

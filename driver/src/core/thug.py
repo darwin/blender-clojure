@@ -67,14 +67,14 @@ class Location(JSClass):
         self._window = window
 
     def toString(self):  # pragma: no cover
-        return self._window.url
+        return self._window.colorize_url
 
     @property
     def parts(self):
-        return urlparse.urlparse(self._window.url)
+        return urlparse.urlparse(self._window.colorize_url)
 
     def get_href(self):
-        return self._window.url
+        return self._window.colorize_url
 
     href = property(get_href)  # , set_href)
 
@@ -112,7 +112,7 @@ class Location(JSClass):
 
     def reload(self, force=False):
         """Reloads the current page."""
-        self._window.open(self._window.url)
+        self._window.open(self._window.colorize_url)
 
     def replace(self, url):
         """Replaces the current document by loading another document at the specified URL."""
@@ -711,7 +711,7 @@ class HTMLDocument(Document):
         self._head = None
         self._currentScript = None
         self._readyState = "loading"
-        self._domain = urlparse.urlparse(self._win.url).hostname if self._win else ''
+        self._domain = urlparse.urlparse(self._win.colorize_url).hostname if self._win else ''
         self.current = None
         self.all = self._all
         self.implementation.createHTMLDocument = self.implementation._createHTMLDocument

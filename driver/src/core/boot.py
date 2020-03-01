@@ -1,27 +1,7 @@
 import copy
+import os
 import sys
-import logging
-
-
-class LogFormatter(logging.Formatter):
-
-    def format(self, record):
-        rich_record = copy.copy(record)
-        rich_record.shortlevelname = rich_record.levelname[0]
-        return logging.Formatter.format(self, rich_record)
-
-
-def init_logging():
-    logger = logging.getLogger("bclj")
-    # TODO: make this configurable
-    logger.setLevel(logging.DEBUG)
-
-    root_logger = logging.getLogger()
-    formatter = LogFormatter('{shortlevelname}:{name} | {message}', style="{")
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-    handler.setFormatter(formatter)
-    root_logger.addHandler(handler)
+import log
 
 
 def install_unhandled_exceptions_handler():
@@ -45,5 +25,5 @@ def install_unhandled_exceptions_handler():
     sys.excepthook = handle_unhandled_exceptions
 
 
-init_logging()
+log.init()
 install_unhandled_exceptions_handler()

@@ -10,7 +10,6 @@ KNOWN_PYTHON_DEPS=(
   hy
   rply
   astor
-  clint
   colorama
   funcparserlib
   beautifulsoup4

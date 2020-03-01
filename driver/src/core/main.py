@@ -7,9 +7,9 @@ import worker
 import hy
 from hy.importer import runhy
 
-import hylc.backtrace
-import hylc.env_info
-import hylc.jobs
+import backtrace
+import env_info
+import jobs
 import repl
 
 # import blender
@@ -32,7 +32,7 @@ def exec_hy_file(path):
     try:
         runhy.run_path(path, run_name='__main__')
     except:
-        hylc.backtrace.present_hy_exception(*sys.exc_info())
+        backtrace.present_hy_exception(*sys.exc_info())
 
 
 def run_hylang_file(path):
@@ -54,7 +54,7 @@ class ModalTimerOperator(bpy.types.Operator):
         if event.type == 'TIMER':
             worker.drain_asyncio_event_loop()
             if nrepl_enabled is not None:
-                hylc.jobs.process_pending_session_jobs()
+                jobs.process_pending_session_jobs()
             path = self.watched_file_path
             if os.path.exists(path):
                 statbuf = os.stat(path)
@@ -115,9 +115,7 @@ def stop_nrepl():
 
 
 def print_welcome():
-    print()
-    print("==== hylc watcher =====")
-    print(hylc.env_info.describe_environment())
+    print(env_info.describe_environment())
 
 
 def start():
