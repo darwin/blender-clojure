@@ -15,6 +15,7 @@ pushd "$(dirname "${BASH_SOURCE[0]}")/.." >/dev/null || exit 11
 
 ROOT_DIR=$(pwd -P)
 # shellcheck disable=SC2034
+BUILD_DIR="$ROOT_DIR/.build"
 DRIVER_DIR="$ROOT_DIR/driver"
 DRIVER_ENTRY_POINT="$DRIVER_DIR/src/entry.py"
 BCLJ_MODULES_DIR=${BCLJ_MODULES_DIR:-"$ROOT_DIR/_modules"}
