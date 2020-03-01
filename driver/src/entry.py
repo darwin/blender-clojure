@@ -11,8 +11,10 @@ import sys
 this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
 modules_dir = os.environ.get("BCLJ_MODULES_DIR") or os.path.join(root_dir, "_modules")
+modules_v8_dir = modules_dir + "_v8"
 hylib_dir = os.path.join(root_dir, "examples", "hylib")
 sys.path.insert(0, modules_dir)
+sys.path.insert(0, modules_v8_dir)
 sys.path.insert(0, hylib_dir)
 sys.path.insert(0, this_dir)
 
