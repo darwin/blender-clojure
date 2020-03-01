@@ -1,0 +1,11 @@
+{:deps   true
+ :builds {:app
+          {:target     :browser
+           :output-dir "public/.compiled"
+           :asset-path "/.compiled"
+           :devtools   {:hud          false
+                        :log-style    ""
+                        :repl-init-ns bpg.sandbox
+                        :repl-pprint  true}
+           :modules    {:sandbox
+                        {:init-fn bpg.sandbox/init}}}}}

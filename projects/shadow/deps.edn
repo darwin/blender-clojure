@@ -1,0 +1,8 @@
+{:paths ["src"]
+ :deps  {org.clojure/clojure       {:mvn/version "RELEASE"}
+         org.clojure/clojurescript {:mvn/version "RELEASE"}
+         appliedscience/js-interop {:git/url "https://github.com/appliedsciencestudio/js-interop.git"
+                                    :sha     "e6b5f0b84b736481269a62beb4ce70f99a30f9a0"}
+         ; ----
+         thheller/shadow-cljs      {:mvn/version "RELEASE"}}
+ }

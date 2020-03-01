@@ -5,6 +5,7 @@ import time
 # make sure you have run ./scripts/install-deps.sh or provide your custom HYLC_MODULES_DIR
 # we prepend our modules to sys paths to avoid picking
 # any possibly existing outdated libs from blender
+
 this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
 modules_dir = os.environ.get("HYLC_MODULES_DIR") or os.path.join(root_dir, "_modules")
@@ -14,6 +15,9 @@ sys.path.insert(0, modules_dir)
 sys.path.insert(0, shared_dir)
 sys.path.insert(0, lib_dir)
 sys.path.insert(0, this_dir)
+
+import boot
+import worker
 
 import hy
 from hy.importer import runhy
@@ -29,28 +33,7 @@ import bpy
 nrepl_enabled = os.environ.get("HYLC_NREPL")
 nrepl_server = None
 
-last_good_stdout = sys.stdout
-last_good_stderr = sys.stderr
-
-
-def install_unhandled_exceptions_handler():
-    orig_excepthook = sys.excepthook
-
-    def handle_unhandled_exceptions(exc_type, exc_value, exc_traceback):
-        if exc_type is KeyboardInterrupt:
-            # hard exit
-            sys.stdout = last_good_stdout
-            sys.stderr = last_good_stderr
-            print("got KeyboardInterrupt")
-            stop_nrepl()
-            sys.stdout.flush()
-            sys.stderr.flush()
-            sys.exit(1)
-        else:
-            orig_excepthook(exc_type, exc_value, exc_traceback)
-
-    sys.excepthook = handle_unhandled_exceptions
-
+import js
 
 live_file_path = os.environ.get("HYLC_LIVE_FILE")
 if live_file_path is None:
@@ -84,6 +67,7 @@ class ModalTimerOperator(bpy.types.Operator):
 
     def modal(self, _context, event):
         if event.type == 'TIMER':
+            worker.drain_asyncio_event_loop()
             if nrepl_enabled is not None:
                 hylc.jobs.process_pending_session_jobs()
             path = self.watched_file_path
@@ -154,7 +138,7 @@ def print_welcome():
 if __name__ == "__main__":
     print_welcome()
     start_nrepl()
-    install_unhandled_exceptions_handler()
     register()
     # test call
     bpy.ops.wm.modal_timer_operator()
+    js.bootstrap()

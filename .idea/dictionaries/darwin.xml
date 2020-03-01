@@ -1,10 +1,13 @@
 <component name="ProjectDictionaryState">
   <dictionary name="darwin">
     <words>
+      <w>asyncio</w>
       <w>bencode</w>
       <w>bencoded</w>
       <w>blendfile</w>
+      <w>cljs</w>
       <w>clojurify</w>
+      <w>ctxt</w>
       <w>defclass</w>
       <w>defmain</w>
       <w>defop</w>
@@ -16,13 +19,17 @@
       <w>hylangfile</w>
       <w>hylc</w>
       <w>hyrepl</w>
+      <w>iowait</w>
       <w>lein</w>
       <w>livecode</w>
       <w>nrepl</w>
       <w>oldout</w>
       <w>pyversion</w>
+      <w>rsock</w>
       <w>setv</w>
       <w>socketserver</w>
+      <w>websockets</w>
+      <w>wsock</w>
     </words>
   </dictionary>
 </component>

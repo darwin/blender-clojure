@@ -13,6 +13,10 @@ KNOWN_PYTHON_DEPS=(
   clint
   colorama
   funcparserlib
+  beautifulsoup4
+  six
+  lxml
+  websockets
   "$BACKTRACE_DEP"
 )
 

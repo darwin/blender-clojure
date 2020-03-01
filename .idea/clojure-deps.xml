@@ -4,6 +4,7 @@
     <option name="projectFiles">
       <list>
         <option value="file://$PROJECT_DIR$/deps.edn" />
+        <option value="file://$PROJECT_DIR$/projects/shadow/deps.edn" />
       </list>
     </option>
   </component>

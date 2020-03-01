@@ -2,7 +2,7 @@
 <module cursive.leiningen.project.DepsProjectsManager.isLeinModule="true" cursive.leiningen.project.LeiningenProjectsManager.displayName="blender-hylang-live-code" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Python" name="Python">
-      <configuration sdkName="Python 3.7" />
+      <configuration sdkName="Python 3.7 (blender-hylang-live-code)" />
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
@@ -16,10 +16,11 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/_modules" />
       <excludeFolder url="file://$MODULE_DIR$/modules" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Python 3.7 interpreter library" level="application" />
+    <orderEntry type="library" name="Python 3.7 (blender-hylang-live-code) interpreter library" level="application" />
     <orderEntry type="library" name="Deps: com.cognitect/transit-java:0.8.332" level="project" />
     <orderEntry type="library" name="Deps: org.clojure/data.json:0.2.6" level="project" />
     <orderEntry type="library" name="Deps: org.clojure/clojure:1.10.1" level="project" />

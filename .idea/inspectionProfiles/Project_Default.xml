@@ -8,5 +8,15 @@
         </list>
       </option>
     </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredBaseClasses">
+        <list>
+          <option value="unittest.TestCase" />
+          <option value="unittest.case.TestCase" />
+          <option value="dom.JSObj" />
+          <option value="v8.JSClass" />
+        </list>
+      </option>
+    </inspection_tool>
   </profile>
 </component>
