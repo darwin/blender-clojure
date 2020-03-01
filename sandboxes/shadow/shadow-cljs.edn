@@ -1,5 +1,5 @@
 {:deps   true
- :builds {:app
+ :builds {:sandbox
           {:target     :browser
            :output-dir "public/.compiled"
            :asset-path "/.compiled"

@@ -10,7 +10,7 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
 
 # TODO: make this configurable
-base_assets_path = os.path.join(root_dir, "projects", "shadow", "public", ".compiled")
+base_assets_path = os.path.join(root_dir, "sandboxes", "shadow", "public", ".compiled")
 entry_script = "sandbox.js"
 
 
