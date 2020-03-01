@@ -19,16 +19,19 @@
       <w>hylang</w>
       <w>hylangfile</w>
       <w>hylc</w>
+      <w>hylib</w>
       <w>hyrepl</w>
       <w>intelli</w>
       <w>iowait</w>
       <w>lein</w>
+      <w>levelname</w>
       <w>livecode</w>
       <w>nrepl</w>
       <w>oldout</w>
       <w>pyversion</w>
       <w>rsock</w>
       <w>setv</w>
+      <w>shortlevelname</w>
       <w>socketserver</w>
       <w>websockets</w>
       <w>wsock</w>

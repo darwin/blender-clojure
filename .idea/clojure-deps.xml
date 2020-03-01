@@ -3,8 +3,9 @@
   <component name="DepsProjectsManager">
     <option name="projectFiles">
       <list>
-        <option value="file://$PROJECT_DIR$/deps.edn" />
         <option value="file://$PROJECT_DIR$/sandboxes/shadow/deps.edn" />
+        <option value="file://$PROJECT_DIR$/driver/deps.edn" />
+        <option value="file://$PROJECT_DIR$/examples/deps.edn" />
       </list>
     </option>
   </component>

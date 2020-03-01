@@ -1,7 +1,4 @@
 ; this project is not clojure project
 ; it gathers python and hy files
 ; deps.edn is useful for IntelliJ/Cursive
-{:paths ["src/lib"
-         "src/shared"
-         "src/watcher"
-         "examples"]}
+{:paths ["src"]}

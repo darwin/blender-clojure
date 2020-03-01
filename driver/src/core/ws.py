@@ -4,7 +4,7 @@ import STPyV8
 import logging
 import v8
 
-logger = logging.getLogger('hylc.websockets')
+logger = logging.getLogger('bclj.websockets')
 
 from threading import Thread
 

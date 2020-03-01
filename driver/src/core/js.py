@@ -7,7 +7,7 @@ import bpy
 import v8
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
-root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
+root_dir = os.path.abspath(os.path.join(this_dir, "..", "..", ".."))
 
 # TODO: make this configurable
 base_assets_path = os.path.join(root_dir, "sandboxes", "shadow", "public", ".compiled")
@@ -39,8 +39,8 @@ class Console(v8.JSClass):
 
 
 def import_scripts(path):
-    print("request to import '{}'".format(path))
     full_path = os.path.join(base_assets_path, path)
+    print("request to import '{}'".format(full_path))
     code = read_script(full_path)
     js_eval(code, path)
 

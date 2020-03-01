@@ -1,22 +1,7 @@
+import boot
 import os
 import sys
 import time
-
-# make sure you have run ./scripts/install-deps.sh or provide your custom BCLJ_MODULES_DIR
-# we prepend our modules to sys paths to avoid picking
-# any possibly existing outdated libs from blender
-
-this_dir = os.path.abspath(os.path.dirname(__file__))
-root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
-modules_dir = os.environ.get("BCLJ_MODULES_DIR") or os.path.join(root_dir, "_modules")
-lib_dir = os.path.join(root_dir, "src", "lib")
-shared_dir = os.path.join(root_dir, "src", "shared")
-sys.path.insert(0, modules_dir)
-sys.path.insert(0, shared_dir)
-sys.path.insert(0, lib_dir)
-sys.path.insert(0, this_dir)
-
-import boot
 import worker
 
 import hy
@@ -135,7 +120,7 @@ def print_welcome():
     print(hylc.env_info.describe_environment())
 
 
-if __name__ == "__main__":
+def start():
     print_welcome()
     start_nrepl()
     register()
