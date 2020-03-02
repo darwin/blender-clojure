@@ -18,7 +18,7 @@ export BCLJ_BLENDER_PYTHON_PATH="/path/to/your/blender/and/its/python"
 
 Unfortunately installation might be quite involved because you have to compile V8 engine:
 ```bash
-# this script should compile and install fresh v8 python module under _modules_v8
+# this script should compile and install fresh v8 python module under venv/lib/.../site-packages
 ./scripts/build_v8.sh
 ```
 

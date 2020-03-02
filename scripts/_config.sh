@@ -18,7 +18,9 @@ ROOT_DIR=$(pwd -P)
 BUILD_DIR="$ROOT_DIR/.build"
 DRIVER_DIR="$ROOT_DIR/driver"
 DRIVER_ENTRY_POINT="$DRIVER_DIR/src/entry.py"
-BCLJ_MODULES_DIR=${BCLJ_MODULES_DIR:-"$ROOT_DIR/_modules"}
+VENV_DIR="$ROOT_DIR/venv"
+VENV_PACKAGES_DIR="$VENV_DIR/lib/python3.7/site-packages"
+BCLJ_PACKAGES_DIR=${BCLJ_PACKAGES_DIR:-"$VENV_PACKAGES_DIR"}
 
 # mac specific
 MAC_BLENDER_APP_PATH="/Applications/Blender.app"

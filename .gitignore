@@ -1,6 +1,5 @@
 .*.swp
 venv
 workspace
-_modules*
 .idea/libraries
 .build

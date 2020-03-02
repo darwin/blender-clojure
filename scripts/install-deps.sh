@@ -22,9 +22,14 @@ KNOWN_PYTHON_DEPS=(
 cd "$ROOT_DIR"
 
 set -x
-cd "$BCLJ_BLENDER_PYTHON_PATH"
 
-# this worked for me on macOS 10.15.4, blender 2.82
-bin/python3.7m -m ensurepip
-bin/python3.7m -m pip install -U pip
-bin/pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}" -t "$BCLJ_MODULES_DIR"
+# delete old venv
+if [[ -d "$VENV_DIR" ]]; then
+  rm -rf "$VENV_DIR"
+fi
+
+# create a new clean venv
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -U pip
+pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}"
