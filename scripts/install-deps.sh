@@ -16,6 +16,7 @@ KNOWN_PYTHON_DEPS=(
   six
   lxml
   websockets
+  fake-bpy-module-2.82
   "$BACKTRACE_DEP"
 )
 
