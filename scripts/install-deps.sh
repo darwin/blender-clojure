@@ -22,8 +22,6 @@ KNOWN_PYTHON_DEPS=(
 
 cd "$ROOT_DIR"
 
-set -x
-
 # delete old venv
 if [[ -d "$VENV_DIR" ]]; then
   rm -rf "$VENV_DIR"
