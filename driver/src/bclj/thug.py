@@ -10,7 +10,7 @@ import os
 import random
 import time
 
-import STPyV8
+from bclj import v8
 import sys
 import bs4
 import six
@@ -164,7 +164,7 @@ class Window(JSClass):
 
             with self.window.context as ctx:
                 try:
-                    if isinstance(self.code, STPyV8.JSFunction):
+                    if isinstance(self.code, v8.JSFunction):
                         self.code()
                     else:
                         ctx.eval(self.code)
@@ -183,7 +183,7 @@ class Window(JSClass):
         self.url = url
         self.doc = Document(bs4.BeautifulSoup('', 'lxml'))
         self.document = self.doc
-        self.context = STPyV8.JSContext(self)
+        self.context = v8.JSContext(self)
 
         self.WebSocket = WebSocket
         self.WebSocket.window = self

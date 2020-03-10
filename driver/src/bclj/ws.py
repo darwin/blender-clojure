@@ -1,6 +1,5 @@
 import asyncio
 import websockets
-import STPyV8
 import logging
 from bclj import v8
 
@@ -48,7 +47,7 @@ def abbreviate_message_for_log(msg):
 
 
 def execute_callback(context, code, *args):
-    assert (isinstance(code, STPyV8.JSFunction))
+    assert (isinstance(code, v8.JSFunction))
     with context as ctx:
         try:
             code(*args)
