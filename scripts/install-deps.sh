@@ -23,13 +23,8 @@ KNOWN_PYTHON_DEPS=(
 
 cd "$ROOT_DIR"
 
-# delete old venv
-if [[ -d "$VENV_DIR" ]]; then
-  rm -rf "$VENV_DIR"
-fi
+./scripts/create-venv.sh
 
-# create a new clean venv
-python3 -m venv venv
 source venv/bin/activate
 pip3 install -U pip
 pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}"
