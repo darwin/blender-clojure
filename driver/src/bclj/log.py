@@ -9,8 +9,10 @@ colorize_output = True
 
 
 def colorize(color, s):
-    if colorize_output:
+    if colorize_output and s:
         return "{}{}{}".format(color, s, colorama.Fore.RESET)
+    else:
+        return ""
 
 
 def colorize_red(s):
@@ -55,8 +57,25 @@ class LogFormatter(logging.Formatter):
     def __init__(self):
         logging.Formatter.__init__(self, '{threadName}: {shortname} | {message}', style="{")
 
+    def format_extra(self, record):
+        s = ""
+        if record.exc_info:
+            # Cache the traceback text to avoid converting it multiple times
+            # (it's constant anyway)
+            if not record.exc_text:
+                record.exc_text = self.formatException(record.exc_info)
+        if record.exc_text:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + record.exc_text
+        if record.stack_info:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + self.formatStack(record.stack_info)
+        return s
+
     def format(self, record):
-        message = record.getMessage()
+        message = record.getMessage() + colorize_gray(self.format_extra(record))
         if record.levelno >= logging.ERROR:
             return colorize_error(message)
         elif record.levelno >= logging.WARN:
