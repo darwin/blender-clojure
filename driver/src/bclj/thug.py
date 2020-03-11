@@ -10,7 +10,6 @@ import os
 import random
 import time
 
-from bclj import v8
 import sys
 import bs4
 import six
@@ -22,7 +21,7 @@ import sched
 
 sched = sched.scheduler(time.time, time.sleep)
 
-from bclj import ws, v8
+from bclj import ws, http, v8
 
 JSClass = v8.JSClass
 
@@ -31,6 +30,12 @@ class WebSocket(JSClass, ws.WebSocket):
 
     def __init__(self, url):
         ws.WebSocket.__init__(self, url)
+
+
+class XMLHttpRequest(JSClass, http.XMLHttpRequest):
+
+    def __init__(self):
+        http.XMLHttpRequest.__init__(self)
 
 
 class DOMException(RuntimeError, JSClass):
@@ -187,6 +192,9 @@ class Window(JSClass):
 
         self.WebSocket = WebSocket
         self.WebSocket.window = self
+
+        self.XMLHttpRequest = XMLHttpRequest
+        self.XMLHttpRequest.window = self
 
         self.doc.window = self
         self.doc.contentWindow = self

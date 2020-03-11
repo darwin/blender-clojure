@@ -3,6 +3,9 @@
 
 (js/console.log "Hello from bpg.sandbox")
 
+(defn ^:dev/after-load start []
+  (js/console.log "reloaded"))
+
 (defn init []
   (js/console.log "bpg.sandbox.init() called!"))
 
@@ -17,4 +20,3 @@
   (let [o (active-object)]
     (j/assoc-in! o [:data :body] s)
     o))
-

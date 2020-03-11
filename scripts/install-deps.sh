@@ -16,6 +16,7 @@ KNOWN_PYTHON_DEPS=(
   six
   lxml
   websockets
+  aiohttp
 # this is causing troubles by importing "typing" and raising AttributeError: type object 'Callable' has no attribute '_abc_registry'
 #  fake-bpy-module-2.82
   "$BACKTRACE_DEP"
