@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="darwin">
     <words>
+      <w>asyn</w>
       <w>asyncio</w>
       <w>bclj</w>
       <w>bencode</w>
@@ -32,6 +33,7 @@
       <w>oldout</w>
       <w>pyversion</w>
       <w>rsock</w>
+      <w>sched</w>
       <w>setv</w>
       <w>shortlevelname</w>
       <w>shortname</w>

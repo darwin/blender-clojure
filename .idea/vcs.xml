@@ -3,7 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/.build/stpyv8" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/.build/stpyv8/_gclient_v8_yr6vVz" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/.build/stpyv8/depot_tools" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/.build/stpyv8/v8" vcs="Git" />
   </component>
