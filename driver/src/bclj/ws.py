@@ -76,7 +76,7 @@ class WebSocket(object):
         try:
             async with websockets.connect(self.url) as ws:
                 logger.debug("client_loop: entering receive loop... {}".format(ws))
-                self.ws = ws
+                self._ws = ws
                 self._change_ready_state(self.READY_STATE_OPEN)
                 try:
                     while True:
@@ -87,7 +87,7 @@ class WebSocket(object):
                 except Exception as e:
                     logger.error("client_loop: ran into problems {}".format(e))
                     self._trigger_handler("onerror", ErrorEvent(e))
-                self.ws = None
+                self._ws = None
                 logger.debug("client_loop: leaving...")
         except Exception as e:
             self.readyState = self.READY_STATE_CLOSED
@@ -143,5 +143,5 @@ class WebSocket(object):
     @v8.report_exceptions
     def close(self, code=None, reason=None, *_):
         logger.debug("close code={} reason={}".format(code, reason))
-        self.ws.close()
+        self._ws.close()
         self._change_ready_state(self.READY_STATE_CLOSED)
