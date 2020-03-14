@@ -20,7 +20,7 @@ def server_loop_thread(loop):
 def start_server_loop():
     loop = asyncio.new_event_loop()
     t = Thread(target=server_loop_thread, args=(loop,))
-    t.name = "bclj.ws-asyncio"
+    t.name = "bclj.ws [asyncio]"
     t.daemon = True
     t.start()
     return loop

@@ -20,7 +20,7 @@ def net_client_loop_thread(loop):
 def start_client_loop():
     loop = asyncio.new_event_loop()
     t = Thread(target=net_client_loop_thread, args=(loop,))
-    t.name = "bclj.net-asyncio"
+    t.name = "bclj.net [asyncio]"
     t.daemon = True
     t.start()
     return loop
