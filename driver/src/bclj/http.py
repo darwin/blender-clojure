@@ -7,34 +7,34 @@ from aiohttp import ClientResponse
 
 from bclj import v8, autils
 
-logger = logging.getLogger('bclj.net')
+logger = logging.getLogger('bclj.http')
 
 from threading import Thread
 
 
-def net_client_loop_thread(loop):
+def async_loop_thread(loop):
     asyncio.set_event_loop(loop)
     loop.set_debug(True)
-    logger.debug("Entering net client loop {}".format(loop))
+    logger.debug("Entering async loop {}".format(loop))
     loop.run_forever()
 
 
-def start_client_loop():
+def start_async_loop():
     loop = asyncio.new_event_loop()
-    t = Thread(target=net_client_loop_thread, args=(loop,))
-    t.name = "bclj.net [asyncio]"
+    t = Thread(target=async_loop_thread, args=(loop,))
+    t.name = "bclj.http [asyncio]"
     t.daemon = True
     t.start()
     return loop
 
 
-client_loop: asyncio.AbstractEventLoop
+async_loop: asyncio.AbstractEventLoop
 
 
-def start_client_loop_if_needed():
-    if "client_loop" not in globals():
-        global client_loop
-        client_loop = start_client_loop()
+def start_async_loop_if_needed():
+    if "async_loop" not in globals():
+        global async_loop
+        async_loop = start_async_loop()
 
 
 async def dispatch_http_method(session, method, *args, **kwargs):
@@ -55,6 +55,7 @@ def abbreviate_message_for_log(msg):
 
 # note that this is not full XMLHttpRequest implementation,
 # we implement only what is currently needed for shadow-cljs to work
+# noinspection PyPep8Naming
 class XMLHttpRequest(object):
     READY_STATE_UNSENT = 0  # Client has been created. open() not called yet.
     READY_STATE_OPENED = 1  # open() has been called.
@@ -92,7 +93,7 @@ class XMLHttpRequest(object):
 
     @v8.report_exceptions
     def __init__(self):
-        start_client_loop_if_needed()
+        start_async_loop_if_needed()
 
         assert threading.current_thread() is threading.main_thread()
         self._main_loop = asyncio.get_event_loop()
@@ -129,7 +130,7 @@ class XMLHttpRequest(object):
     def send(self, body=None, *_):
         logger.debug("send {}".format(body))
         assert isinstance(body, str)
-        autils.call_soon(client_loop, self._send_request, body)
+        autils.call_soon(async_loop, self._send_request, body)
 
     @v8.report_exceptions
     def abort(self, *_):

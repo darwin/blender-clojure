@@ -6,33 +6,33 @@ import logging
 
 from bclj import v8, autils
 
-logger = logging.getLogger('bclj.websockets')
+logger = logging.getLogger('bclj.ws')
 
 from threading import Thread
 
-server_loop: asyncio.AbstractEventLoop
+async_loop: asyncio.AbstractEventLoop
 
 
-def server_loop_thread(loop):
+def async_loop_thread(loop):
     asyncio.set_event_loop(loop)
     loop.set_debug(True)
-    logger.debug("Entering websockets server loop {}".format(loop))
+    logger.debug("Entering async loop {}".format(loop))
     loop.run_forever()
 
 
-def start_server_loop():
+def start_async_loop():
     loop = asyncio.new_event_loop()
-    t = Thread(target=server_loop_thread, args=(loop,))
+    t = Thread(target=async_loop_thread, args=(loop,))
     t.name = "bclj.ws [asyncio]"
     t.daemon = True
     t.start()
     return loop
 
 
-def start_server_loop_if_needed():
-    if "server_loop" not in globals():
-        global server_loop
-        server_loop = start_server_loop()
+def start_async_loop_if_needed():
+    if "async_loop" not in globals():
+        global async_loop
+        async_loop = start_async_loop()
 
 
 class Event(v8.JSClass):
@@ -118,7 +118,7 @@ class WebSocket(object):
     @v8.report_exceptions
     def __init__(self, url, protocols=None):
         assert (protocols is None)
-        start_server_loop_if_needed()
+        start_async_loop_if_needed()
 
         assert threading.current_thread() is threading.main_thread()
         self._main_loop = asyncio.get_event_loop()
@@ -134,12 +134,12 @@ class WebSocket(object):
         self.onclose = None
         self.onerror = None
 
-        autils.call_soon(server_loop, self._run_client_loop)
+        autils.call_soon(async_loop, self._run_client_loop)
 
     @v8.report_exceptions
     def send(self, msg, *_):
         logger.debug("send msg={}".format(abbreviate_message_for_log(msg)))
-        autils.call_soon(server_loop, self._send_message, msg)
+        autils.call_soon(async_loop, self._send_message, msg)
 
     @v8.report_exceptions
     def close(self, code=None, reason=None, *_):
