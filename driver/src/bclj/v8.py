@@ -1,4 +1,5 @@
 import logging
+from functools import wraps
 
 try:
     import STPyV8
@@ -24,6 +25,7 @@ def execute_callback(context, code, *args):
 
 
 def report_exceptions(f):
+    @wraps(f)
     def wrapper(*args, **kw):
         try:
             return f(*args, **kw)
