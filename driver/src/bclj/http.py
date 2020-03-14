@@ -1,9 +1,11 @@
 import logging
 import asyncio
+import threading
+
 import aiohttp
 from aiohttp import ClientResponse
 
-from bclj import v8
+from bclj import v8, autils
 
 logger = logging.getLogger('bclj.net')
 
@@ -51,11 +53,6 @@ def abbreviate_message_for_log(msg):
         return msg
 
 
-async def process_onreadystatechange(self):
-    if self.onreadystatechange is not None:
-        v8.execute_callback(self._window.context, self.onreadystatechange)
-
-
 # note that this is not full XMLHttpRequest implementation,
 # we implement only what is currently needed for shadow-cljs to work
 class XMLHttpRequest(object):
@@ -65,9 +62,13 @@ class XMLHttpRequest(object):
     READY_STATE_LOADING = 3  # Downloading; responseText holds partial data.
     READY_STATE_DONE = 4  # The operation is complete.
 
+    async def _process_onreadystatechange(self):
+        if self.onreadystatechange is not None:
+            v8.execute_callback(self._window.context, self.onreadystatechange)
+
     def _change_ready_state(self, new_state):
         self.readyState = new_state
-        asyncio.run_coroutine_threadsafe(process_onreadystatechange(self), self._main_loop)
+        autils.call_soon(self._main_loop, self._process_onreadystatechange)
 
     async def _send_request(self, body):
         url = self._url
@@ -93,6 +94,7 @@ class XMLHttpRequest(object):
     def __init__(self):
         start_client_loop_if_needed()
 
+        assert threading.current_thread() is threading.main_thread()
         self._main_loop = asyncio.get_event_loop()
         # noinspection PyUnresolvedReferences
         self._window = self.__class__.window
@@ -127,7 +129,7 @@ class XMLHttpRequest(object):
     def send(self, body=None, *_):
         logger.debug("send {}".format(body))
         assert isinstance(body, str)
-        asyncio.run_coroutine_threadsafe(self._send_request(body), client_loop)
+        autils.call_soon(client_loop, self._send_request, body)
 
     @v8.report_exceptions
     def abort(self, *_):
