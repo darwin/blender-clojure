@@ -45,6 +45,17 @@ class MessageEvent(Event):
         self.data = data
 
 
+class ErrorEvent(Event):
+
+    def __init__(self, ex):
+        super().__init__()
+        self.exception = ex
+        self.message = str(ex)
+
+    def __str__(self):
+        return self.message
+
+
 def abbreviate_message_for_log(msg):
     if len(msg) > 300:
         return msg[:300] + "...}"
@@ -62,22 +73,25 @@ class WebSocket(object):
 
     async def _run_client_loop(self):
         logger.info("Connecting via websockets to '{}'".format(self.url))
-        async with websockets.connect(self.url) as ws:
-            logger.debug("client_loop: entering receive loop... {}".format(ws))
-            self.ws = ws
-            self._change_ready_state(self.READY_STATE_OPEN)
-            try:
-                while True:
-                    msg = await ws.recv()
-                    logger.debug("client_loop: got message len={}\n<< {}".format(len(msg), abbreviate_message_for_log(msg)))
-                    self._trigger_handler("onmessage", MessageEvent(msg))
-            except Exception as e:
-                logger.error("client_loop: ran into problems {}".format(e))
-                event = Event()
-                event.message = str(e)
-                self._trigger_handler("onerror", event)
-            self.ws = None
-            logger.debug("client_loop: leaving...")
+        try:
+            async with websockets.connect(self.url) as ws:
+                logger.debug("client_loop: entering receive loop... {}".format(ws))
+                self.ws = ws
+                self._change_ready_state(self.READY_STATE_OPEN)
+                try:
+                    while True:
+                        msg = await ws.recv()
+                        logger.debug(
+                            "client_loop: got message len={}\n<< {}".format(len(msg), abbreviate_message_for_log(msg)))
+                        self._trigger_handler("onmessage", MessageEvent(msg))
+                except Exception as e:
+                    logger.error("client_loop: ran into problems {}".format(e))
+                    self._trigger_handler("onerror", ErrorEvent(e))
+                self.ws = None
+                logger.debug("client_loop: leaving...")
+        except Exception as e:
+            self.readyState = self.READY_STATE_CLOSED
+            self._trigger_handler("onerror", ErrorEvent(e))
 
     async def _trigger_handler_async(self, handler_name, *args):
         logger.debug("triggering handler {} with args={}".format(handler_name, args))
