@@ -6,7 +6,7 @@ import logging
 
 from bclj import v8, autils
 
-logger = logging.getLogger('bclj.ws')
+logger = logging.getLogger(__name__)
 
 from threading import Thread
 
@@ -23,7 +23,7 @@ def async_loop_thread(loop):
 def start_async_loop():
     loop = asyncio.new_event_loop()
     t = Thread(target=async_loop_thread, args=(loop,))
-    t.name = "bclj.ws [asyncio]"
+    t.name = "{} [asyncio]".format(__name__)
     t.daemon = True
     t.start()
     return loop

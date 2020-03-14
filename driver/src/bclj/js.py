@@ -10,7 +10,7 @@ root_dir = os.path.abspath(os.path.join(this_dir, "..", "..", ".."))
 base_assets_path = os.path.join(root_dir, "sandboxes", "shadow", "public", ".compiled")
 entry_script = "sandbox.js"
 
-logger = logging.getLogger("bclj.js")
+logger = logging.getLogger(__name__)
 
 
 def report_eval_error(e):

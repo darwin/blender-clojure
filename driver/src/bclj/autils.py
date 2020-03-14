@@ -3,7 +3,7 @@ import logging
 import asyncio
 from functools import wraps
 
-logger = logging.getLogger('bclj.autils')
+logger = logging.getLogger(__name__)
 
 
 def wrap_coroutine_with_exceptions_reporting(coro, *args, **kwargs):

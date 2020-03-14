@@ -11,7 +11,7 @@ except ModuleNotFoundError as e:
 
 from STPyV8 import JSFunction, JSContext
 
-logger = logging.getLogger('bclj.v8')
+logger = logging.getLogger(__name__)
 
 
 def execute_callback(context, code, *args):
