@@ -7,7 +7,8 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", "..", ".."))
 
 # TODO: make this configurable
-base_assets_path = os.path.join(root_dir, "sandboxes", "shadow", "public", ".compiled")
+public_path = os.path.join(root_dir, "sandboxes", "shadow", "public")
+compiled_assets_path = os.path.join(public_path, ".compiled")
 entry_script = "sandbox.js"
 
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class Console(v8.JSClass):
 
 
 def import_scripts(path):
-    full_path = os.path.join(base_assets_path, path)
+    full_path = os.path.join(compiled_assets_path, path)
     logger.debug("request to import '{}'".format(log.colorize_file(full_path)))
     code = read_script(full_path)
     js_eval(code, path)
@@ -69,4 +70,5 @@ def js_eval(js, name=""):
 
 def bootstrap():
     js_eval("this.console = foreignConsole")
+    js_eval("window.location.origin = \"{}\"".format(public_path))
     js_eval('importScripts("{}")'.format(entry_script))
