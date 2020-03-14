@@ -26,6 +26,6 @@ cd "$ROOT_DIR"
 
 ./scripts/create-venv.sh
 
-source venv/bin/activate
+source "$VENV_DIR/bin/activate"
 pip3 install -U pip
 pip3 install --upgrade "${KNOWN_PYTHON_DEPS[@]}"

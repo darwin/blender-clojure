@@ -8,5 +8,5 @@ cd "$ROOT_DIR"
 
 if [[ ! -d "$VENV_DIR" ]]; then
   # create a new clean venv
-  python3 -m venv venv
+  python3 -m venv "$VENV_DIR"
 fi

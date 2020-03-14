@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="darwin">
     <words>
+      <w>appliedscience</w>
       <w>asyn</w>
       <w>asyncio</w>
       <w>bclj</w>
@@ -8,6 +9,7 @@
       <w>bencoded</w>
       <w>blendfile</w>
       <w>cljs</w>
+      <w>clojurescript</w>
       <w>clojurify</w>
       <w>cpython</w>
       <w>ctxt</w>
@@ -39,6 +41,7 @@
       <w>shortname</w>
       <w>socketserver</w>
       <w>stpyv</w>
+      <w>thheller</w>
       <w>ughsq</w>
       <w>websockets</w>
       <w>wsock</w>
