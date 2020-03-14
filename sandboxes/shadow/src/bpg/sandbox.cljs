@@ -20,3 +20,6 @@
   (let [o (active-object)]
     (j/assoc-in! o [:data :body] s)
     o))
+
+(defn throw! [x]
+  (throw (ex-info x {:some "data"})))
