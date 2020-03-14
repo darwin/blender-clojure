@@ -61,7 +61,6 @@ class WebSocket(object):
     READY_STATE_CLOSED = 3
 
     async def _run_client_loop(self):
-        self._change_ready_state(self.READY_STATE_CONNECTING)
         logger.info("Connecting via websockets to '{}'".format(self.url))
         async with websockets.connect(self.url) as ws:
             logger.debug("client_loop: entering receive loop... {}".format(ws))
