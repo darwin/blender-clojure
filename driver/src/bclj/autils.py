@@ -2,8 +2,25 @@ import inspect
 import logging
 import asyncio
 from functools import wraps
+from threading import Thread
 
 logger = logging.getLogger(__name__)
+
+
+def async_loop_thread(loop):
+    asyncio.set_event_loop(loop)
+    loop.set_debug(True)
+    logger.debug("Entering async loop {}".format(loop))
+    loop.run_forever()
+
+
+def start_async_loop(name):
+    loop = asyncio.new_event_loop()
+    t = Thread(target=async_loop_thread, args=(loop,))
+    t.name = "{} [async loop]".format(name)
+    t.daemon = True
+    t.start()
+    return loop
 
 
 def wrap_coroutine_with_exceptions_reporting(coro, *args, **kwargs):

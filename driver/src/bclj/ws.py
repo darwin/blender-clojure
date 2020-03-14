@@ -8,31 +8,13 @@ from bclj import v8, autils
 
 logger = logging.getLogger(__name__)
 
-from threading import Thread
-
 async_loop: asyncio.AbstractEventLoop
-
-
-def async_loop_thread(loop):
-    asyncio.set_event_loop(loop)
-    loop.set_debug(True)
-    logger.debug("Entering async loop {}".format(loop))
-    loop.run_forever()
-
-
-def start_async_loop():
-    loop = asyncio.new_event_loop()
-    t = Thread(target=async_loop_thread, args=(loop,))
-    t.name = "{} [asyncio]".format(__name__)
-    t.daemon = True
-    t.start()
-    return loop
 
 
 def start_async_loop_if_needed():
     if "async_loop" not in globals():
         global async_loop
-        async_loop = start_async_loop()
+        async_loop = autils.start_async_loop(__name__)
 
 
 class Event(v8.JSClass):
