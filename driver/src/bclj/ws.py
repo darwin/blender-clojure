@@ -100,7 +100,8 @@ class WebSocket(object):
             self._trigger_handler("onclose", Event())
 
     @v8.report_exceptions
-    def __init__(self, url):
+    def __init__(self, url, protocols=None):
+        assert (protocols is None)
         start_server_loop_if_needed()
 
         self._main_loop = asyncio.get_event_loop()
@@ -122,7 +123,7 @@ class WebSocket(object):
         server_loop.call_soon_threadsafe(start_client_loop)
 
     @v8.report_exceptions
-    def send(self, msg):
+    def send(self, msg, *_):
         logger.debug("send msg={}".format(abbreviate_message_for_log(msg)))
         asyncio.run_coroutine_threadsafe(self._send_message(msg), server_loop)
 
