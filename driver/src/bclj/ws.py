@@ -1,7 +1,10 @@
 import asyncio
+import threading
+
 import websockets
 import logging
-from bclj import v8
+
+from bclj import v8, autils
 
 logger = logging.getLogger('bclj.websockets')
 
@@ -100,7 +103,7 @@ class WebSocket(object):
             return v8.execute_callback(self._window.context, handler, *args)
 
     def _trigger_handler(self, handler_name, *args):
-        asyncio.run_coroutine_threadsafe(self._trigger_handler_async(handler_name, *args), self._main_loop)
+        autils.call_soon(self._main_loop, self._trigger_handler_async, handler_name, *args)
 
     async def _send_message(self, msg):
         return await self._ws.send(msg)
@@ -117,6 +120,7 @@ class WebSocket(object):
         assert (protocols is None)
         start_server_loop_if_needed()
 
+        assert threading.current_thread() is threading.main_thread()
         self._main_loop = asyncio.get_event_loop()
         # noinspection PyUnresolvedReferences
         self._window = self.__class__.window
@@ -130,15 +134,12 @@ class WebSocket(object):
         self.onclose = None
         self.onerror = None
 
-        def start_client_loop():
-            asyncio.ensure_future(self._run_client_loop())
-
-        server_loop.call_soon_threadsafe(start_client_loop)
+        autils.call_soon(server_loop, self._run_client_loop)
 
     @v8.report_exceptions
     def send(self, msg, *_):
         logger.debug("send msg={}".format(abbreviate_message_for_log(msg)))
-        asyncio.run_coroutine_threadsafe(self._send_message(msg), server_loop)
+        autils.call_soon(server_loop, self._send_message, msg)
 
     @v8.report_exceptions
     def close(self, code=None, reason=None, *_):
