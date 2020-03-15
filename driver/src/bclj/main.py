@@ -1,83 +1,44 @@
 import os
-import sys
-import time
-
-import hy
-from hy.importer import runhy
 
 import logging
-from bclj import hyrepl, jobs, env_info, backtrace, log, worker, js
+from bclj import jobs, env_info, log, worker, js
 
-# import blender
-import bpy
+import bpy  # import blender
 
-logger = logging.getLogger("bclj")
+logger = logging.getLogger(__name__)
 
-nrepl_enabled = os.environ.get("BCLJ_HYLANG_NREPL")
-hyrepl_server = None
-
-live_file_path = os.environ.get("BCLJ_LIVE_FILE")
-if live_file_path is not None:
-    if not os.path.exists(live_file_path):
-        logger.warning("live file '%s' does not exists" % live_file_path)
-
-
-def exec_hy_file(path):
-    try:
-        runhy.run_path(path, run_name='__main__')
-    except:
-        backtrace.present_hy_exception(*sys.exc_info())
-
-
-def run_hylang_file(path):
-    logger.info("Reloading '{}' ".format(log.colorize_file(path)))
-    exec_hy_file(path)
-    logger.info("Done executing '{}'".format(path))
+from bclj import hy
 
 
 class ModalTimerOperator(bpy.types.Operator):
     """Operator which runs its self from a timer"""
     bl_idname = "wm.modal_timer_operator"
     bl_label = "Modal Timer Operator"
-    last_check = 0
-    watched_file_path = live_file_path
 
     _timer = None
 
     def modal(self, _context, event):
         if event.type == 'TIMER':
             worker.drain_asyncio_event_loop()
-            if nrepl_enabled is not None:
-                jobs.process_pending_session_jobs()
-
-            path = self.watched_file_path
-            if path is not None:
-                if os.path.exists(path):
-                    statbuf = os.stat(path)
-                    if statbuf.st_mtime > self.last_check:
-                        self.last_check = statbuf.st_mtime
-                        run_hylang_file(path)
-
+            jobs.process_pending_session_jobs()
+            hy.check_live_file()
         return {'PASS_THROUGH'}
 
     def execute(self, context):
         wm = context.window_manager
         self._timer = wm.event_timer_add(0.1, window=context.window)
         wm.modal_handler_add(self)
-        if self.watched_file_path is not None:
-            logger.info("Watching '{}' for changes and re-loading.".format(log.colorize_file(self.watched_file_path)))
+        hy.log_live_file_watching_start()
         return {'RUNNING_MODAL'}
 
     def cancel(self, context):
         wm = context.window_manager
         wm.event_timer_remove(self._timer)
-        if self.watched_file_path is not None:
-            logger.info("Finished watching '{}'".format(log.colorize_file(self.watched_file_path)))
+        hy.log_live_file_watching_stop()
 
 
 def frame_change_handler(_scene):
-    if live_file_path is not None:
-        run_hylang_file(live_file_path)
+    hy.run_live_file()
 
 
 def register():
@@ -90,35 +51,13 @@ def unregister():
     bpy.app.handlers.frame_change_post.remove(frame_change_handler)
 
 
-def start_nrepl():
-    global hyrepl_server
-
-    if nrepl_enabled is None:
-        return None
-
-    hyrepl_server = hyrepl.start_server()
-
-
-def stop_nrepl():
-    global hyrepl_server
-
-    if nrepl_enabled is None:
-        return None
-
-    if hyrepl_server is None:
-        return None
-
-    hyrepl.shutdown_server(hyrepl_server)
-    hyrepl_server = None
-
-
 def print_welcome():
     print(env_info.describe_environment())
 
 
 def start():
     print_welcome()
-    start_nrepl()
+    hy.start_hyrepl()
     register()
     # test call
     bpy.ops.wm.modal_timer_operator()
