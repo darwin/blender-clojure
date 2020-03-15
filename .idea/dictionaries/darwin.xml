@@ -25,6 +25,7 @@
       <w>hylangfile</w>
       <w>hylc</w>
       <w>hylib</w>
+      <w>hylive</w>
       <w>hyrepl</w>
       <w>intelli</w>
       <w>iowait</w>
@@ -40,6 +41,7 @@
       <w>shortlevelname</w>
       <w>shortname</w>
       <w>socketserver</w>
+      <w>statbuf</w>
       <w>stpyv</w>
       <w>thheller</w>
       <w>ughsq</w>
