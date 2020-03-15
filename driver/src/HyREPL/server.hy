@@ -2,7 +2,7 @@
   sys
   threading
   time
-  bclj.jobs
+  bclj.hy
   [socketserver [ThreadingMixIn TCPServer BaseRequestHandler]])
 
 (import [HyREPL [bencode session]])
@@ -46,7 +46,7 @@
           (setv self.session (or (.get session.sessions (.get msg "session"))
                                  (session.Session))))
         ; request session job
-        (bclj.jobs.handle_session_message self.session msg transport)))
+        (bclj.hy.handle_session_message self.session msg transport)))
     (print "Client gone" self.request :file sys.stderr)))
 
 

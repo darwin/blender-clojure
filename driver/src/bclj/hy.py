@@ -1,7 +1,10 @@
+import asyncio
 import os
 import sys
 import logging
-from bclj import log, backtrace
+import threading
+
+from bclj import log, backtrace, autils
 
 hy_enabled = os.environ.get("BCLJ_HY_SUPPORT") is not None
 
@@ -24,6 +27,17 @@ else:
 live_file_last_mtime = 0
 
 hyrepl_server = None
+
+assert threading.current_thread() is threading.main_thread()
+main_loop = asyncio.get_event_loop()
+
+
+async def process_session_message(session, msg, request):
+    session.handle(msg, request)
+
+
+def handle_session_message(session, msg, request):
+    autils.call_soon(main_loop, process_session_message, session, msg, request)
 
 
 def start_hyrepl():
