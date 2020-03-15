@@ -1,7 +1,7 @@
 import logging
 import bpy  # import blender
 
-from bclj import jobs, worker, hy
+from bclj import worker, hy
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,6 @@ class ModalTimerOperator(bpy.types.Operator):
     def modal(self, _context, event):
         if event.type == 'TIMER':
             worker.drain_asyncio_event_loop()
-            jobs.process_pending_session_jobs()
             hy.check_live_file()
         return {'PASS_THROUGH'}
 

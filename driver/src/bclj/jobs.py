@@ -1,34 +1,15 @@
-import time
+import asyncio
+import threading
 
-pending_session_jobs = []
+from bclj import autils
 
-
-def process_session_job(data, fut):
-    result = data["session"].handle(data["msg"], data["request"])
-    fut["result"] = result
-    fut["resolved"] = True
+assert threading.current_thread() is threading.main_thread()
+main_loop = asyncio.get_event_loop()
 
 
-def process_pending_session_jobs():
-    while len(pending_session_jobs) > 0:
-        work_item = pending_session_jobs.pop(0)
-        process_session_job(work_item["data"], work_item["fut"])
-
-
-def request_session_job(data):
-    fut = {"resolved": False}
-    pending_session_jobs.append({"data": data,
-                                 "fut": fut})
-    return fut
+async def process_job(session, msg, request):
+    session.handle(msg, request)
 
 
 def handle_session_message(session, msg, request):
-    fut = request_session_job({"session": session,
-                               "msg": msg,
-                               "request": request})
-
-    # TODO: is there a better way how to wait for work to be completed on other thread?
-    while fut["resolved"] is False:
-        time.sleep(0.03)
-
-    return fut["result"]
+    autils.call_soon(main_loop, process_job, session, msg, request)
