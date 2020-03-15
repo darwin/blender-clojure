@@ -17,7 +17,7 @@
 (defclass ReplRequestHandler [BaseRequestHandler]
   (setv session None)
   (defn handle [self]
-    (print "New client" self.request :file sys.stderr)
+    (bclj.hy.repl_logger.info (.format "New HyREPL client {}" self.request))
     (let [buf (bytearray)
           transport self.request
           tmp None
@@ -39,7 +39,7 @@
             (.clear buf)
             (.extend buf rest))
           (except [e Exception]
-            (print e :file sys.stderr)
+            ;(bclj.hy.repl_logger.exception "Unable to decode REPL message" :stack_info True)
             (continue)))
         ; setup session
         (if-not self.session
@@ -47,7 +47,7 @@
                                  (session.Session))))
         ; request session job
         (bclj.hy.handle_session_message self.session msg transport)))
-    (print "Client gone" self.request :file sys.stderr)))
+    (bclj.hy.repl_logger.info (.format "HyREPL Client gone {}" self.request))))
 
 
 (defn start-server [&optional [host "127.0.0.1"] [port 1337]]
@@ -77,6 +77,6 @@
       (except [e OSError]
         (setv port (inc port)))
       (else
-        (print (.format "Listening on {}" port) :file sys.stderr)
+        (bclj.hy.repl_logger.info (.format "HyREPL listening on {}" port))
         (while True
           (time.sleep 1))))))

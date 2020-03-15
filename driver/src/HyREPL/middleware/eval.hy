@@ -21,7 +21,7 @@
         exc-value (second trace)
         exc-traceback (get trace 2)]
     (setv session.last-traceback exc-traceback)
-    (backtrace.present-hy-exception exc-type exc-value exc-traceback)
+    (bclj.backtrace.present-hy-exception exc-type exc-value exc-traceback)
     (writer {"status"  ["eval-error"]
              "ex"      (. exc-type --name--)
              "root-ex" (. exc-type --name--)

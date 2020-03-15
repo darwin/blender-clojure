@@ -14,6 +14,8 @@ if hy_enabled:
 
 hyrepl_enabled = hy_enabled and os.environ.get("BCLJ_HYLANG_NREPL") is not None
 
+repl_logger = logging.getLogger("{} [HyREPL]".format(__name__))
+
 logger = logging.getLogger(__name__)
 
 if not hy_enabled:
@@ -33,7 +35,10 @@ main_loop = asyncio.get_event_loop()
 
 
 async def process_session_message(session, msg, request):
-    session.handle(msg, request)
+    try:
+        session.handle(msg, request)
+    except Exception:
+        logger.exception("Failed to handle HyREPL session message", stack_info=True)
 
 
 def handle_session_message(session, msg, request):

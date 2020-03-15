@@ -1,5 +1,6 @@
 (import sys
         clojure
+        bclj.hy
         [uuid [uuid4]])
 (require [clojure [*]])
 (import [clojure [*]])
@@ -28,13 +29,13 @@
     (assert (in "id" msg))
     (unless (in "session" msg)
       (assoc msg "session" self.uuid))
-    (print "out:" msg :file sys.stderr)
+    (bclj.hy.repl_logger.debug (.format "out: {}" msg))
     (try
       (.sendall transport (bencode.encode msg))
       (except [e OSError]
-        (print (.format "Client gone: {}" e) :file sys.stderr))))
+        (bclj.hy.repl_logger.info (.format "Client gone: {}" e)))))
   (defn handle [self msg transport]
-    (print "in:" msg :file sys.stderr)
+    (bclj.hy.repl_logger.debug (.format "in: {}" msg))
     (let [res (hack self msg)]
       (cond
         [(list? res) (for [r res]
