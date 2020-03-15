@@ -12,7 +12,7 @@ export BCLJ_BLENDER_PYTHON_PATH="/path/to/your/blender/and/its/python"
 ```
 
 * Run `./scripts/install-deps.sh` to install the Hy-lang dependencies in a place where Blender's internal Python can find them.
-* Run `./scripts/blender.sh examples/one-hundred-cubes.hy` to start Blender watching one-hundred-cubes.hy and re-loading it whenever it changes.
+* Run `./scripts/blender.sh -hylive examples/one-hundred-cubes.hy` to start Blender watching one-hundred-cubes.hy and re-loading it whenever it changes.
 
 ## ClojureScript support
 
@@ -48,8 +48,10 @@ In another terminal session, start Blender with blender-clojure driver:
 ./scripts/blender.sh
 ```
 ```text
+> ./scripts/blender.sh
 BCLJ_BLENDER_PATH=/Applications/Blender.app/Contents/MacOS/Blender
 BCLJ_BLENDER_PYTHON_PATH=/Applications/Blender.app/Contents/Resources/2.82/python
+BCLJ_PACKAGES_DIR=/Users/darwin/lab/blender-clojure/.venv/lib/python3.7/site-packages
 + exec /Applications/Blender.app/Contents/MacOS/Blender assets/blank.blend --python /Users/darwin/lab/blender-clojure/driver/src/entry.py
 Read prefs: /Users/darwin/Library/Application Support/Blender/2.82/config/userpref.blend
 found bundled python: /Applications/Blender.app/Contents/Resources/2.82/python
@@ -58,9 +60,10 @@ Read blend: /Users/darwin/lab/blender-clojure/assets/blank.blend
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Starting blender-clojure driver...
 hy 0.18.0 using CPython(default) 3.7.4 on Darwin in Blender 2.82 (sub 7)
-Connecting via websockets to 'ws://localhost:9630/ws/worker/sandbox/653fee06-84dc-4d31-82ad-bf0de1b8c8ed/63294777-69d5-4727-a5e6-466417d708ac/browser'
+Connecting via websockets to 'ws://localhost:9630/ws/worker/sandbox/e452c1e2-aef2-4fc0-af73-6d8a0870e2f0/aed44a0b-5b5e-411b-977f-c70d7f60e120/browser'
 console.log Hello from bpg.sandbox
 console.log bpg.sandbox.init() called!
+console.log shadow-cljs: WebSocket connected!
 console.log shadow-cljs: REPL session start successful
 ```
 
