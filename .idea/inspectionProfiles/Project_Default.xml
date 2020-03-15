@@ -23,6 +23,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="bclj.hyrepl" />
+          <option value="bpy" />
         </list>
       </option>
     </inspection_tool>
