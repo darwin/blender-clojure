@@ -74,4 +74,4 @@ if [[ ! -d "$BLCJ_GEN_CLJS_DIR" ]]; then
   mkdir -p "$BLCJ_GEN_CLJS_DIR"
 fi
 
-rsync -arv --delete "$TMP_GEN_DIR/" "$BLCJ_GEN_CLJS_DIR"
+rsync -ar --delete --stats "$TMP_GEN_DIR/" "$BLCJ_GEN_CLJS_DIR"
