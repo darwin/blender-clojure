@@ -7,6 +7,7 @@
         <option value="file://$PROJECT_DIR$/driver/deps.edn" />
         <option value="file://$PROJECT_DIR$/examples/deps.edn" />
         <option value="file://$PROJECT_DIR$/tools/apigen/deps.edn" />
+        <option value="file://$PROJECT_DIR$/bcljs/deps.edn" />
       </list>
     </option>
   </component>
