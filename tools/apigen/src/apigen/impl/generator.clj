@@ -107,19 +107,21 @@
 ; ---------------------------------------------------------------------------------------------------------------------------
 
 (defn generate-files-for-table [api-table]
-  (status/info (str "generating files for '" (:module api-table) "'"))
   [(gen-clj api-table)
    (gen-cljs api-table)])
 
 ; ---------------------------------------------------------------------------------------------------------------------------
 
-(defn generate-files [[file-key api-table]]
-  (generate-files-for-table (assoc api-table :module (name file-key))))
+(defn generate-xf [reporter]
+  (let [* (fn [[file-key api-table]]
+            (binding [status/*reporter* reporter]
+              (status/info (str "generating files for '" (name file-key) "'"))
+              (realize-deep (generate-files-for-table (assoc api-table :module (name file-key))))))]
+    (mapcat *)))
 
 (defn generate [api-tables & [reporter]]
-  (assert (map? api-tables))
-  (binding [status/*reporter* reporter]
-    (realize-deep (into {} (mapcat generate-files api-tables)))))
+  (let [xf (generate-xf reporter)]
+    (into {} xf api-tables)))
 
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

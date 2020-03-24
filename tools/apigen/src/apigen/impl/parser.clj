@@ -187,19 +187,21 @@
     {:docs  (extract-docs <section>)
      :descs (keep process-desc descs)}))
 
-(defn process-document [[file-key <document>]]
-  (status/info (str "processing xml document '" file-key "'"))
-  (try
-    (assert (is-el? <document> :document))
-    [file-key (realize-deep (extract-useful-info <document>))]
-    (catch Throwable e
-      (throw (ex-info (str "unable to parse document '" file-key "'") {:doc  <document>
-                                                                       :file file-key} e)))))
+(defn parse-xml-data-xf [reporter]
+  (let [* (fn [[file-key <document>]]
+            (binding [status/*reporter* reporter]
+              (status/info (str "processing xml document '" file-key "'"))
+              (try
+                (assert (is-el? <document> :document))
+                [file-key (realize-deep (extract-useful-info <document>))]
+                (catch Throwable e
+                  (throw (ex-info (str "unable to parse document '" file-key "'") {:doc  <document>
+                                                                                   :file file-key} e))))))]
+    (keep *)))
 
 (defn parse-xml-data [xml-data & [reporter]]
-  (assert (map? xml-data))
-  (binding [status/*reporter* reporter]
-    (realize-deep (into {} (keep process-document xml-data)))))
+  (let [xf (parse-xml-data-xf reporter)]
+    (into {} xf xml-data)))
 
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -3,10 +3,10 @@
   (:require [clojure.string :as string]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.pprint :refer [print-table]]
-            [apigen.impl.reader :refer [list-xml-files read-xml-data]]
-            [apigen.impl.parser :refer [parse-xml-data]]
-            [apigen.impl.generator :refer [generate]]
-            [apigen.impl.writer :refer [write-sources!]]
+            [apigen.impl.reader :as reader]
+            [apigen.impl.parser :as parser]
+            [apigen.impl.generator :as generator]
+            [apigen.impl.writer :as writer]
             [clojure.java.io :as io]))
 
 (def cli-options
@@ -124,19 +124,30 @@
 
 ; -- worker -----------------------------------------------------------------------------------------------------------------
 
+(defn get-worker-xf [out-dir]
+  (comp (reader/read-xml-data-xf report!)
+        (parser/parse-xml-data-xf report!)
+        (generator/generate-xf report!)
+        (writer/write-sources-xf out-dir report!)))
+
+(defn overlook
+  ([] :ok)
+  ([v] v)
+  ([a v] (if (and (= a :ok) (= v :ok))
+           :ok
+           :fail)))
+
 (defn work! [options]
   (println)
   (let [{:keys [input output logfile]} options]
     (with-log logfile
       (report! :log (pr-str options))
       (report! :log "")
-      (let [all-xml-files (list-xml-files input)
+      (let [all-xml-files (reader/list-xml-files input)
             xml-files (keep (partial filter-xml-file options) all-xml-files)
-            xml-data (read-xml-data xml-files report!)
-            api-data (parse-xml-data xml-data report!)
-            generated-files (generate api-data report!)]
-        (write-sources! output generated-files report!)
-        (report! :info (str "processed " (count xml-files) " file(s)"))))))
+            worker-xf (get-worker-xf output)
+            result (transduce worker-xf overlook xml-files)]
+        (report! :info (str "processed " (count xml-files) " file(s) with result " result))))))
 
 ; -- main -------------------------------------------------------------------------------------------------------------------
 

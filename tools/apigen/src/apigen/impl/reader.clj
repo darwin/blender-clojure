@@ -38,14 +38,18 @@
                    (re-matches filter (.getName file)))]
     (remove (complement matches?) files)))
 
-(defn read-xml-data [files & [reporter]]
+(defn read-xml-data-xf [reporter]
   (let [read (fn [file]
-               (status/info (str "reading xml '" file "'"))
-               (let [key (keyword (strip-xml-file-extension file))
-                     data (read-xml file)]
-                 [key data]))]
-    (binding [status/*reporter* reporter]
-      (realize-deep (into {} (map read files))))))
+               (binding [status/*reporter* reporter]
+                 (status/info (str "reading xml '" file "'"))
+                 (let [key (keyword (strip-xml-file-extension file))
+                       data (realize-deep (read-xml file))]
+                   [key data])))]
+    (map read)))
+
+(defn read-xml-data [files & [reporter]]
+  (let [xform (read-xml-data-xf reporter)]
+    (into {} xform files)))
 
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -56,10 +60,12 @@
       (filter-xml-files #".*types.*")
       (retain-xml-files #".*bmesh.*"))
 
+  (read-xml-data-xf nil)
+
   (let [working-set (-> (list-xml-files "../.workspace/xml")
                         (filter-xml-files #".*types.*")
                         (filter-xml-files #".*bmesh\.utils.*")
                         (retain-xml-files #".*bmesh.*"))]
-    (:bmesh.ops (read-xml-data working-set)))
+    (keys (read-xml-data working-set)))
 
   )

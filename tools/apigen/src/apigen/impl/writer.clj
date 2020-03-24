@@ -5,10 +5,17 @@
 
 ; -- API --------------------------------------------------------------------------------------------------------------------
 
+(defn write-sources-xf [dir reporter]
+  (let [* (fn [[path file-content]]
+            (binding [status/*reporter* reporter]
+              (let [full-path (io/file dir path)]
+                (status/info (str "writing '" full-path "'"))
+                (io/make-parents full-path)
+                (spit full-path file-content)
+                :ok)))]
+    (map *)))
+
 (defn write-sources! [dir files & [reporter]]
-  (binding [status/*reporter* reporter]
-    (doseq [[path file-content] files]
-      (let [full-path (io/file dir path)]
-        (status/info (str "writing '" full-path "'"))
-        (io/make-parents full-path)
-        (spit full-path file-content)))))
+  (let [xf (write-sources-xf dir reporter)]
+    (into [] xf files)))
+
