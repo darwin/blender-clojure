@@ -10,7 +10,7 @@
             [apigen.impl.writer :refer [write-sources!]]
             [apigen.impl.helpers :refer :all]
             [apigen.impl.status :as status])
-  (:import (apigen.impl.types DocString)))
+  (:import (apigen.impl.types DocString CodeComment)))
 
 (def ns-prefix "bcljs")
 
@@ -29,6 +29,8 @@
   (symbol (string/join "." (build-safe-ns-parts ns))))
 
 ; ---------------------------------------------------------------------------------------------------------------------------
+
+(def max-clojure-fn-arity 20)
 
 (defn safe-name [name]
   (symbol (kebab-case name)))
@@ -63,14 +65,19 @@
 
 (defn gen-function [desc]
   (let [{:keys [name docs params]} desc
-        max-arity (count params)
+        max-available-arity (- max-clojure-fn-arity 4)                                                                        ; see gen-function-arity
+        max-arity (min max-available-arity (count params))
         min-arity (count (take-while (complement has-default?) params))
         arities (range min-arity (inc max-arity))
         param-arities (map #(take % params) arities)
-        docstring (format-docs docs)]
-    `(~'defmacro ~(safe-name name) ::nl
+        docstring (format-docs docs)
+        macro-name (safe-name name)
+        macro-name2 (str macro-name "+")]
+    `(~'defmacro ~macro-name ::nl
        ~@(if docstring [docstring ::nl])
-       ~@(interpose ::nl (map (partial gen-function-arity name) param-arities)))))
+       ~@(interpose ::nl (map (partial gen-function-arity name) param-arities))
+       ~@(if (> (count params) max-available-arity)
+          [(CodeComment. (str "for more parameters use " macro-name2))]))))
 
 (defn gen-desc [desc]
   (case (:type desc)

@@ -11,7 +11,7 @@
             [clojure.data.xml])
   (:import (clojure.data.xml.node Element)
            (java.io StringWriter)
-           (apigen.impl.types DocString)))
+           (apigen.impl.types DocString CodeComment)))
 
 (def ^:const INDENT-CHAR " ")
 
@@ -89,6 +89,9 @@
           effective-indent (+ current-indent 1)
           prefixed-text (prefix-text (indent-str effective-indent) (.-text v))]
       (print (str \" prefixed-text \")))
+
+    (instance? CodeComment v)
+    (print (str "\n; " (.-text v) "\n"))
 
     (= v :apigen.impl.generator/nl)
     (print "\n")
