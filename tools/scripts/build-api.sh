@@ -53,8 +53,11 @@ if [[ -z "$BLCJ_GEN_CLJS_DIR" ]]; then
 fi
 
 TMP_GEN_DIR="$WORKSPACE_DIR/gen"
-if [[ -d "TMP_GEN_DIR" ]]; then
-  rm -rf "$TMP_GEN_DIR"
+
+if [[ $# != "0" ]]; then
+  if [[ -d "TMP_GEN_DIR" ]]; then
+    rm -rf "$TMP_GEN_DIR"
+  fi
 fi
 mkdir -p "$TMP_GEN_DIR"
 
@@ -62,13 +65,13 @@ mkdir -p "$TMP_GEN_DIR"
 set -x
 cd apigen
 pwd
-time clj -A:cli -- --input "$BCLJ_XML_DIR" --output "$TMP_GEN_DIR" --logfile "$WORKSPACE_DIR/build-api-log.txt"
+time clj -A:cli -- --input "$BCLJ_XML_DIR" --output "$TMP_GEN_DIR" --logfile "$WORKSPACE_DIR/build-api-log.txt" "$@"
 
 set +x
 
 cd "$TOOLS_DIR"
-if [[ -d "$BLCJ_GEN_CLJS_DIR" ]]; then
-  rm -rf "$BLCJ_GEN_CLJS_DIR"
+if [[ ! -d "$BLCJ_GEN_CLJS_DIR" ]]; then
+  mkdir -p "$BLCJ_GEN_CLJS_DIR"
 fi
-mkdir -p "$BLCJ_GEN_CLJS_DIR"
-cp -r "$TMP_GEN_DIR/" "$BLCJ_GEN_CLJS_DIR"
+
+rsync -arv --delete "$TMP_GEN_DIR/" "$BLCJ_GEN_CLJS_DIR"
