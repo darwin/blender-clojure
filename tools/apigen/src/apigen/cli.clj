@@ -13,6 +13,8 @@
   [["-i" "--input " "Input API XML dir" :default ".workspace/xml"]
    ["-o" "--output " "Output dir for generated cljs sources" :default ".workspace/gen"]
    ["-l" "--logfile PATH" "Output log file"]
+   [nil "--only SUBSTR" "Process only files containing a substring (or any from space-separated list of strings)"]
+   [nil "--except SUBSTR" "Process only files not containing a substring (or any from space-separated list of strings)"]
    ["-h" "--help"]])
 
 (defn usage [options-summary]
@@ -23,6 +25,8 @@
                          "Options:"
                          options-summary]))
 
+; -- helpers ----------------------------------------------------------------------------------------------------------------
+
 (defn error-msg [errors]
   (str "The following errors occurred while parsing your command:\n\n"
        (string/join \newline errors)))
@@ -30,6 +34,8 @@
 (defn exit [status msg]
   (println msg)
   (System/exit status))
+
+; -- logging ----------------------------------------------------------------------------------------------------------------
 
 (def ^:dynamic *log*)
 
@@ -58,19 +64,79 @@
        (if logfile#
          (close-log *log*)))))
 
-(defn run-job! [options]
+; -- input filtering --------------------------------------------------------------------------------------------------------
+
+(defn set-positive-filter [task]
+  (assoc task :enabled true))
+
+(defn set-negative-filter [task]
+  (assoc task :enabled false))
+
+(defn filter-via-only [task only]
+  (let [task-name (:name task)
+        candidates (string/split only #"\s+")
+        match (some #(if (.contains task-name %) %) candidates)]
+    (if match
+      (assoc task :enabled true
+                  :enabled-reason (if (not= match only)
+                                    (str "enabled because matching '" match "' via --only '" only "'")
+                                    (str "enabled because matching --only '" only "'")))
+      task)))
+
+(defn filter-via-except [task except]
+  (let [task-name (:name task)
+        candidates (string/split except #"\s+")
+        match (some #(if (.contains task-name %) %) candidates)]
+    (if match
+      (assoc task :enabled false
+                  :enabled-reason (if (not= match except)
+                                    (str "disabled because matching '" match "' via --except '" except "'")
+                                    (str "disabled because matching --except '" except "'")))
+      task)))
+
+(defn filter-via-include [task include]
+  (let [task-name (:name task)
+        matching? (some? (re-matches (re-pattern include) task-name))]
+    (if matching?
+      (assoc task :enabled true
+                  :enabled-reason (str "enabled because matching regex --include '" include "'"))
+      task)))
+
+(defn filter-via-exclude [task exclude]
+  (let [task-name (:name task)
+        matching? (some? (re-matches (re-pattern exclude) task-name))]
+    (if matching?
+      (assoc task :enabled false
+                  :enabled-reason (str "disabled because matching regex --exclude '" exclude "'"))
+      task)))
+
+(defn filter-xml-file [options file]
+  (let [{:keys [only except include exclude]} options
+        task {:name (str file)}
+        filter (cond-> (set-positive-filter task)
+                       (or (some? only) (some? include)) (set-negative-filter)
+                       (some? only) (filter-via-only only)
+                       (some? include) (filter-via-include include)
+                       (some? except) (filter-via-except except)
+                       (some? exclude) (filter-via-exclude exclude))]
+    (if (:enabled filter)
+      file)))
+
+; -- worker -----------------------------------------------------------------------------------------------------------------
+
+(defn work! [options]
   (println)
   (let [{:keys [input output logfile]} options]
     (with-log logfile
       (report! :log (pr-str options))
       (report! :log "")
       (let [all-xml-files (list-xml-files input)
-            ; TODO: filter xml files via cli params
-            xml-data (read-xml-data all-xml-files report!)
+            xml-files (keep (partial filter-xml-file options) all-xml-files)
+            xml-data (read-xml-data xml-files report!)
             api-data (parse-xml-data xml-data report!)
             generated-files (generate api-data report!)]
         (write-sources! output generated-files report!)
-        (report! :info (str "processed " (count all-xml-files) " file(s)"))))))
+        (report! :info (str "processed " (count xml-files) " file(s)"))))))
 
 ; -- main -------------------------------------------------------------------------------------------------------------------
 
@@ -79,4 +145,4 @@
     (cond
       (:help options) (exit 0 (usage summary))
       errors (exit 1 (error-msg errors)))
-    (run-job! options)))
+    (work! options)))
