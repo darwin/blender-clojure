@@ -6,6 +6,7 @@
         <option value="file://$PROJECT_DIR$/sandboxes/shadow/deps.edn" />
         <option value="file://$PROJECT_DIR$/driver/deps.edn" />
         <option value="file://$PROJECT_DIR$/examples/deps.edn" />
+        <option value="file://$PROJECT_DIR$/tools/apigen/deps.edn" />
       </list>
     </option>
   </component>

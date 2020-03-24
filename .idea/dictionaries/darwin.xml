@@ -1,25 +1,41 @@
 <component name="ProjectDictionaryState">
   <dictionary name="darwin">
     <words>
+      <w>abcdefghijklmnopqrstuvwxyz</w>
+      <w>apigen</w>
       <w>appliedscience</w>
+      <w>arities</w>
       <w>asyn</w>
       <w>asyncio</w>
       <w>bclj</w>
+      <w>bcljs</w>
       <w>bencode</w>
       <w>bencoded</w>
+      <w>blancas</w>
+      <w>blcj</w>
       <w>blendfile</w>
+      <w>bmesh</w>
+      <w>btnfr</w>
+      <w>callgen</w>
+      <w>cljfmt</w>
       <w>cljs</w>
       <w>clojurescript</w>
       <w>clojurify</w>
+      <w>clostache</w>
       <w>cpython</w>
       <w>ctxt</w>
+      <w>cuerdas</w>
       <w>defclass</w>
       <w>defmain</w>
       <w>defop</w>
+      <w>defproject</w>
       <w>deftag</w>
+      <w>descs</w>
       <w>direnv</w>
+      <w>editmode</w>
       <w>excepthook</w>
       <w>exctype</w>
+      <w>funcool</w>
       <w>homebrew</w>
       <w>hylang</w>
       <w>hylangfile</w>
@@ -33,10 +49,14 @@
       <w>levelname</w>
       <w>livecode</w>
       <w>nrepl</w>
+      <w>objtype</w>
       <w>oldout</w>
+      <w>outdir</w>
+      <w>parameterlist</w>
       <w>pyversion</w>
       <w>rsock</w>
       <w>sched</w>
+      <w>seealso</w>
       <w>setv</w>
       <w>shortlevelname</w>
       <w>shortname</w>
@@ -44,8 +64,12 @@
       <w>statbuf</w>
       <w>stpyv</w>
       <w>thheller</w>
+      <w>ubercode</w>
       <w>ughsq</w>
+      <w>unlines</w>
       <w>websockets</w>
+      <w>whitespaced</w>
+      <w>wrapgen</w>
       <w>wsock</w>
     </words>
   </dictionary>
