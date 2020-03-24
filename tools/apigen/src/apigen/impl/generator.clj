@@ -41,7 +41,8 @@
 (defn gen-clj-ns [name docstring]
   `(~'ns ~name ::nl
      ~@(if (some? docstring) [docstring ::nl])
-     (:refer-clojure :only ~'[def defmacro]) ::nl
+     ; TODO: revisit this - it was causing issue to shadow-cljs
+     ;(:refer-clojure :only ~'[def defmacro]) ::nl
      (:require ~'[bcljs.compiler :refer [emit]])))
 
 (defn gen-cljs-ns [name]
