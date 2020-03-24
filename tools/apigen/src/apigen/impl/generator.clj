@@ -41,7 +41,7 @@
 (defn gen-clj-ns [name docstring]
   `(~'ns ~name ::nl
      ~@(if (some? docstring) [docstring ::nl])
-     (:refer-clojure :only ~'[defmacro defn apply declare meta let partial]) ::nl
+     (:refer-clojure :only ~'[def defmacro]) ::nl
      (:require ~'[bcljs.callgen :refer [emit]])))
 
 (defn gen-cljs-ns [name]
