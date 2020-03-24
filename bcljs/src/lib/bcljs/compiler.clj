@@ -1,3 +1,3 @@
-(ns bcljs.callgen)
+(ns bcljs.compiler)
 
 (defn emit [& args])

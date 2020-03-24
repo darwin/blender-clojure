@@ -42,7 +42,7 @@
   `(~'ns ~name ::nl
      ~@(if (some? docstring) [docstring ::nl])
      (:refer-clojure :only ~'[def defmacro]) ::nl
-     (:require ~'[bcljs.callgen :refer [emit]])))
+     (:require ~'[bcljs.compiler :refer [emit]])))
 
 (defn gen-cljs-ns [name]
   `(~'ns ~name ::nl
