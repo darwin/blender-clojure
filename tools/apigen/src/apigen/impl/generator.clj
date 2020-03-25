@@ -10,7 +10,7 @@
             [apigen.impl.writer :refer [write-sources!]]
             [apigen.impl.helpers :refer :all]
             [apigen.impl.status :as status])
-  (:import (apigen.impl.types DocString CodeComment)))
+  (:import (apigen.impl.types DocString CodeComment PrettyEDN)))
 
 (def ns-prefix "bcljs")
 
@@ -56,7 +56,8 @@
   `(~'declare ~'mod))
 
 (defn gen-module [module-info]
-  `(~'def ~'mod ~module-info))
+  `(~'def ~'mod ::nl
+     ~(PrettyEDN. module-info)))
 
 (defn has-default? [param]
   (some? (:default param)))
@@ -115,8 +116,23 @@
     (catch Throwable e
       (throw (ex-info (str "trouble generating desc '" (:name desc) "'\n" e) {:desc desc} e)))))
 
+(defn prepare-param-type-info [param]
+  (let [{:keys [name type-spec]} param]
+    [name type-spec]))
+
+(defn prepare-fn-module-data [desc]
+  (let [{:keys [name params]} desc]
+    {name (mapv prepare-param-type-info params)}))
+
+(defn prepare-module-data [_module-info desc]
+  (case (:type desc)
+    :function (prepare-fn-module-data desc)
+    (status/warn (str "skipping module-data for desc '" (:name desc) "'\n" (print-xml-element-data desc)))))
+
 (defn gen-descs [module-info descs]
-  (keep (partial try-gen-desc module-info) descs))
+  (let [generated-descs (keep (partial try-gen-desc module-info) descs)
+        module-data (apply merge (keep (partial prepare-module-data module-info) descs))]
+    [generated-descs module-data]))
 
 (defn gen-clj [api-table]
   (let [{:keys [descs docs module]} api-table
@@ -125,10 +141,11 @@
         ns-name (build-safe-ns ns)
         ns-docstring (format-docs docs)
         module-info {:name module}
+        [generated-descs module-data] (gen-descs module-info descs)
         parts (concat [(gen-clj-ns ns-name ns-docstring)
                        (gen-module-declaration)]
-                      (gen-descs module-info descs)
-                      [(gen-module module-info)])]
+                      generated-descs
+                      [(gen-module (assoc module-info :params module-data))])]
     [file-path (emit parts)]))
 
 (defn gen-cljs [api-table]
