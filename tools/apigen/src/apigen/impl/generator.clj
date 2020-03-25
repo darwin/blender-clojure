@@ -43,7 +43,7 @@
 (defn gen-clj-ns [name docstring]
   `(~'ns ~name ::nl
      ~@(if (some? docstring) [docstring ::nl])
-     (:refer-clojure :only ~'[defmacro]) ::nl
+     (:refer-clojure :only ~'[defmacro declare]) ::nl
      (:require ~'[bcljs.compiler :refer [emit]])))
 
 (defn gen-cljs-ns [name]
@@ -51,6 +51,9 @@
      (:require-macros [~name]) ::nl
      (:require ~'[bcljs.core] ::nl
        ~'[bcljs.compiler])))
+
+(defn gen-module-declaration []
+  `(~'declare ~'mod))
 
 (defn gen-module [module-info]
   `(~'def ~'mod ~module-info))
@@ -123,8 +126,9 @@
         ns-docstring (format-docs docs)
         module-info {:name module}
         parts (concat [(gen-clj-ns ns-name ns-docstring)
-                       (gen-module module-info)]
-                      (gen-descs module-info descs))]
+                       (gen-module-declaration)]
+                      (gen-descs module-info descs)
+                      [(gen-module module-info)])]
     [file-path (emit parts)]))
 
 (defn gen-cljs [api-table]
