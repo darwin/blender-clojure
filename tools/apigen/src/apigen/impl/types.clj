@@ -4,3 +4,5 @@
 (deftype DocString [text])
 
 (deftype CodeComment [text])
+
+(deftype PrettyEDN [data])
