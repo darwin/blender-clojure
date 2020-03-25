@@ -45,11 +45,13 @@ class BCLJ(v8.JSClass):
 
     @staticmethod
     def pycall(f, pos_args, map_args):
-        print(log.colorize_error("pos_args"), pos_args)
         if map_args is not None:
             f(*pos_args, **map_args)
         else:
-            f()
+            if pos_args is not None and len(pos_args) > 0:
+                f(*pos_args)
+            else:
+                f()
 
 
 def import_scripts(path):
