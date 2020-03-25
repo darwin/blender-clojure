@@ -49,7 +49,8 @@
 (defn gen-cljs-ns [name]
   `(~'ns ~name ::nl
      (:require-macros [~name]) ::nl
-     (:require ~'[bcljs.core])))
+     (:require ~'[bcljs.core] ::nl
+       ~'[bcljs.compiler])))
 
 (defn gen-module [module-info]
   `(~'def ~'mod ~module-info))

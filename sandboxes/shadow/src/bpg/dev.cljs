@@ -5,9 +5,9 @@
 (defn clear-scene! []
   (js/console.log "Clearing scene...")
   (try
-    (object/mode-set #js {:mode "OBJECT"})
+    (object/mode-set {:mode "OBJECT"})
     (catch :default _e))
-  (object/select-all)
+  (object/select-all {:action "SELECT"})
   (object/delete))
 
 (def PI js/Math.PI)
@@ -17,12 +17,25 @@
 
 (defn add-torus []
   (mesh/primitive-torus-add
-    #js {:align    "WORLD"
-         :location #js [0 0 2]
-         :rotation #js [0 (deg 45) 0]}))
+    {:align    "WORLD"
+     :location [0 0 0]
+     :rotation [(deg 45) (deg 45) 0]}))
 
 (clear-scene!)
-(add-torus)
+
+(mesh/primitive-torus-add
+  {:align    :cursor
+   :location [0 -2 0]})
+
+(mesh/primitive-torus-add
+  {:align    :world
+   :location [0 0 0]
+   :rotation [(deg 45) (deg 45) 0]})
+
+(mesh/primitive-torus-add
+  (identity {:align    :world
+             :location [0 0 2]
+             :rotation [(deg 45) (deg 45) 0]}))
 
 (comment
   (add-torus)
