@@ -1,5 +1,6 @@
 (ns bpg.sandbox
-  (:require [applied-science.js-interop :as j]))
+  (:require [bpg.dev]
+            [applied-science.js-interop :as j]))
 
 (js/console.log "Hello from bpg.sandbox")
 
