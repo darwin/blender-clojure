@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ReplProjectCommandManager">
+    <repl-command name="dev-blender!" executionType="EXPRESSION" commandText="(dev-blender!)" executeBefore="NONE" executionNs="EXPLICIT_NS" inNamespace="bpg.nrepl" saveAll="true" />
+  </component>
+</project>

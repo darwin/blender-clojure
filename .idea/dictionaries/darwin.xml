@@ -53,6 +53,7 @@
       <w>oldout</w>
       <w>outdir</w>
       <w>parameterlist</w>
+      <w>pycall</w>
       <w>pyversion</w>
       <w>rsock</w>
       <w>sched</w>
