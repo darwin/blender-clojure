@@ -29,8 +29,22 @@
     (map? val) (marshal-map-val val)
     :else val))
 
-(defn marshal-kw-args [kw-args]
+(defn convert-value-dynamically [val spec]
+  (cond
+    ; TODO: here we should have a plug-able system for dynamic value conversion
+    (= spec "xxx") (identity val)
+    :else val))
+
+(defn apply-type-conversion-dynamically [specs [key val]]
+  (let [spec (shared/find-param-type-spec (shared/python-key key) specs)]
+    (assert (some? spec))
+    [key (convert-value-dynamically val spec)]))
+
+(defn marshal-kw-args [kw-args param-spec]
   (assert (map? kw-args))
-  (let [args (mapcat marshal-kv-arg kw-args)]
+  (let [args (->> kw-args
+                  (map (partial apply-type-conversion-dynamically param-spec))
+                  (map marshal-kv-arg)
+                  (mapcat identity))]
     (apply js-obj args)))
 

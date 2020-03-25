@@ -29,19 +29,34 @@
     (map? val) (marshal-map-val val)
     :else val))
 
-(defn gen-marshalled-kw-args-statically [kw-args]
+(defn convert-value-statically [val spec]
+  (cond
+    ; TODO: here we should have a plug-able system for static value conversion
+    (= spec "xxx") (identity val)
+    :else val))
+
+(defn apply-type-conversion-statically [type-specs [key val]]
+  (let [spec (shared/find-param-type-spec (shared/python-key key) type-specs)]
+    (assert (some? spec))
+    [key (convert-value-statically val spec)]))
+
+(defn gen-marshalled-kw-args-statically [kw-args param-specs]
   (assert (map? kw-args))
-  (let [args (mapcat marshal-kv-arg kw-args)]
+  (let [args (->> kw-args
+                  (map (partial apply-type-conversion-statically param-specs))
+                  (map marshal-kv-arg)
+                  (mapcat identity))]
     `(~'js-obj ~@args)))
 
-(defn gen-marshalled-kw-args-dynamically [kw-args]
-  `(marshal-kw-args ~kw-args))
+(defn gen-marshalled-kw-args-dynamically [kw-args param-specs]
+  ; TODO: we should emit param-specs only once, or rely on GCC data deduplication?
+  `(marshal-kw-args ~kw-args ~(marshal-val param-specs)))
 
-(defn gen-marshalled-kw-args [kw-args]
+(defn gen-marshalled-kw-args [kw-args param-specs]
   (cond
     (nil? kw-args) nil
-    (map? kw-args) (gen-marshalled-kw-args-statically kw-args)
-    :else (gen-marshalled-kw-args-dynamically kw-args)))
+    (map? kw-args) (gen-marshalled-kw-args-statically kw-args param-specs)
+    :else (gen-marshalled-kw-args-dynamically kw-args param-specs)))
 
 (defn gen-fn [fn-name module _form args]
   (let [module-name (get-module-name module)
@@ -53,7 +68,8 @@
         module-name (get-module-name module)
         py-call (symbol "js" "bclj.pycall")
         js-symbol (symbol "js" (str module-name "." fn-name))
-        marshalled-kw-args (gen-marshalled-kw-args kw-args)]
+        param-specs (get-in module [:params fn-name])
+        marshalled-kw-args (gen-marshalled-kw-args kw-args param-specs)]
     `(~py-call ~js-symbol (~'array ~@pos-args) ~marshalled-kw-args)))
 
 (defn emit [kind name module form & args]
