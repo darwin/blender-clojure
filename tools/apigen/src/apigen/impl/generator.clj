@@ -43,8 +43,7 @@
 (defn gen-clj-ns [name docstring]
   `(~'ns ~name ::nl
      ~@(if (some? docstring) [docstring ::nl])
-     ; TODO: revisit this - it was causing issue to shadow-cljs
-     ;(:refer-clojure :only ~'[def defmacro]) ::nl
+     (:refer-clojure :only ~'[defmacro]) ::nl
      (:require ~'[bcljs.compiler :refer [emit]])))
 
 (defn gen-cljs-ns [name]
@@ -77,21 +76,43 @@
        ~@(if docstring [docstring ::nl])
        ~@(interpose ::nl (map (partial gen-function-arity name) param-arities))
        ~@(if (> (count params) max-available-arity)
-          [(CodeComment. (str "for more parameters use " macro-name2))]))))
+           [(CodeComment. (str "for more parameters use " macro-name2))]))))
 
-(defn gen-desc [desc]
+(defn gen-ops-function [desc]
+  (let [{:keys [name docs _params]} desc
+        docstring (format-docs docs)
+        macro-name (safe-name name)]
+    `(~'defmacro ~macro-name ::nl
+       ~@(if docstring [docstring ::nl])
+       (~'[] ::nl
+         (~'emit :op-fn ~name ~'mod ~'&form ~'[])) ::nl
+       (~'[opts] ::nl
+         (~'emit :op-fn ~name ~'mod ~'&form ~'[] ~'opts)) ::nl
+       (~'[oc opts] ::nl
+         (~'emit :op-fn ~name ~'mod ~'&form ~'[oc] ~'opts)) ::nl
+       (~'[oc ec opts] ::nl
+         (~'emit :op-fn ~name ~'mod ~'&form ~'[oc ec] ~'opts)) ::nl
+       (~'[oc ec undo opts] ::nl
+         (~'emit :op-fn ~name ~'mod ~'&form ~'[oc ec undo] ~'opts)))))
+
+(defn is-ops-module? [module-info]
+  (string/starts-with? (:name module-info) "bpy.ops."))
+
+(defn gen-desc [module-info desc]
   (case (:type desc)
-    :function (gen-function desc)
+    :function (if (is-ops-module? module-info)
+                (gen-ops-function desc)
+                (gen-function desc))
     (status/warn (str "skipping desc '" (:name desc) "'\n" (print-xml-element-data desc)))))
 
-(defn try-gen-desc [desc]
+(defn try-gen-desc [module-info desc]
   (try
-    (realize-deep (gen-desc desc))
+    (realize-deep (gen-desc module-info desc))
     (catch Throwable e
       (throw (ex-info (str "trouble generating desc '" (:name desc) "'\n" e) {:desc desc} e)))))
 
-(defn gen-descs [descs]
-  (keep try-gen-desc descs))
+(defn gen-descs [module-info descs]
+  (keep (partial try-gen-desc module-info) descs))
 
 (defn gen-clj [api-table]
   (let [{:keys [descs docs module]} api-table
@@ -102,7 +123,7 @@
         module-info {:name module}
         parts (concat [(gen-clj-ns ns-name ns-docstring)
                        (gen-module module-info)]
-                      (gen-descs descs))]
+                      (gen-descs module-info descs))]
     [file-path (emit parts)]))
 
 (defn gen-cljs [api-table]
