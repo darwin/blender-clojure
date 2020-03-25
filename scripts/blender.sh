@@ -2,20 +2,38 @@
 
 if [[ $1 == "-h" || $1 == "--help" ]]; then
   cat <<EOF
-Usage: $0 [-d][-y][-l live.hy] [scene.blend]
+Usage: $0 [-d][-y][-l live.hy] [scene.blend] -- [blender opts]
 
 Options:
   -d/--debug              Enable verbose debug printing.
   -l/--hylive file.hy     Watches hy file for changes and executes it in Blender on save or frame change.
   -y/--hyrepl             Open hylang nREPL server upon startup.
 
+Note:
+  You can pass blender executable options after -- separator, e.g.
+
+  $0 -d -- --no-window-focus
+
+  You may additionally set BCLJ_BLENDER_OPTS as env variable.
+
+Warning:
+  You might want to set window position on startup via --window-geometry
+  but this won't work with multi-monitor setup on macOS. Instead we provide a helper applescript to deal
+  with that. You should set following environment vars:
+
+    BCLJ_BLENDER_WINDOW_PX
+    BCLJ_BLENDER_WINDOW_PY
+    BCLJ_BLENDER_WINDOW_W
+    BCLJ_BLENDER_WINDOW_H
 EOF
   exit 0
 fi
 
 # poor man's bash flags parsing
 # https://stackoverflow.com/a/14203146/84283
-POSITIONAL=()
+POSITIONAL_OPTS=()
+COLLECT_BLENDER_OPTS=0
+BLENDER_CLI_OPTS=()
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -33,13 +51,21 @@ while [[ $# -gt 0 ]]; do
     ENABLE_HYREPL=1
     shift
     ;;
+  --)
+    COLLECT_BLENDER_OPTS=1
+    shift
+    ;;
   *) # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
-    shift              # past argument
+    if [[ $COLLECT_BLENDER_OPTS == "1" ]]; then
+      BLENDER_CLI_OPTS+=("$1")
+    else
+      POSITIONAL_OPTS+=("$1")
+    fi
+    shift
     ;;
   esac
 done
-set -- "${POSITIONAL[@]}" # restore positional parameters
+set -- "${POSITIONAL_OPTS[@]}" # restore positional parameters
 
 set -e -o pipefail
 # shellcheck source=_config.sh
@@ -76,5 +102,23 @@ echo "BCLJ_BLENDER_PATH=$BCLJ_BLENDER_PATH"
 echo "BCLJ_BLENDER_PYTHON_PATH=$BCLJ_BLENDER_PYTHON_PATH"
 env | grep BCLJ_ | grep -v BCLJ_BLENDER_PATH | grep -v BCLJ_BLENDER_PYTHON_PATH || true
 
+if [[ -n "$BCLJ_BLENDER_WINDOW_PX" ]]; then
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS window customization via applescript, note: it will ask for granting permissions on first run
+    set -x
+    (
+      osascript "./scripts/blender-startup.applescript" \
+        "$BCLJ_BLENDER_WINDOW_PX" \
+        "$BCLJ_BLENDER_WINDOW_PY" \
+        "$BCLJ_BLENDER_WINDOW_W" \
+        "$BCLJ_BLENDER_WINDOW_H"
+    ) &
+    set +x
+  else
+    # on other systems --window-geometry should map to external displays properly, I believe
+    BCLJ_BLENDER_OPTS="$BCLJ_BLENDER_OPTS --window-geometry $BCLJ_BLENDER_WINDOW_PX $BCLJ_BLENDER_WINDOW_PY $BCLJ_BLENDER_WINDOW_W $BCLJ_BLENDER_WINDOW_H"
+  fi
+fi
+
 set -x
-exec "$BCLJ_BLENDER_PATH" "$BLENDER_FILE" --python "$DRIVER_ENTRY_POINT"
+exec "$BCLJ_BLENDER_PATH" "$BLENDER_FILE" --python "$DRIVER_ENTRY_POINT" $BCLJ_BLENDER_OPTS "${BLENDER_CLI_OPTS[@]}"
