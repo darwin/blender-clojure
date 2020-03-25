@@ -257,11 +257,17 @@
     (second m)
     s))
 
+(defn beautify-type-spec [s]
+  (-> s
+      (string/replace #"\s*([.,(){}\[\]])\s*" "$1")
+      (string/replace #"([({\[])" " $1")))
+
 (defn clean-type-spec [s]
   (-> s
       (string/trim)
       (peal-parens-off)
-      (string/trim)))
+      (string/trim)
+      (beautify-type-spec)))
 
 (defn parse-soup-simple [meat doc]
   (let [[name type-spec] (string/split meat #" " 2)]
