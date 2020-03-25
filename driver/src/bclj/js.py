@@ -38,6 +38,20 @@ class Console(v8.JSClass):
         print(log.colorize_error("console.error"), *args)
 
 
+root = thug.Window("http://localhost/watcher.js")
+
+
+class BCLJ(v8.JSClass):
+
+    @staticmethod
+    def pycall(f, pos_args, map_args):
+        print(log.colorize_error("pos_args"), pos_args)
+        if map_args is not None:
+            f(*pos_args, **map_args)
+        else:
+            f()
+
+
 def import_scripts(path):
     full_path = os.path.join(compiled_assets_path, path)
     logger.debug("request to import '{}'".format(log.colorize_file(full_path)))
@@ -45,12 +59,12 @@ def import_scripts(path):
     js_eval(code, path)
 
 
-root = thug.Window("http://localhost/watcher.js")
 root.Node = thug.Node(root.doc)
 root.foreignConsole = Console()
 root.importScripts = import_scripts
 root.reportEvalError = report_eval_error
 assert sys.modules['bpy']
+root.bclj = BCLJ()
 root.bpy = sys.modules['bpy']
 root.window = root
 
