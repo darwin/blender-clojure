@@ -10,7 +10,7 @@
             [apigen.impl.writer :refer [write-sources!]]
             [apigen.impl.helpers :refer :all]
             [apigen.impl.status :as status])
-  (:import (apigen.impl.types DocString CodeComment PrettyEDN)))
+  (:import (apigen.impl.types DocString CodeComment PrettyEDN ReaderTag)))
 
 (def ns-prefix "bcljs")
 
@@ -22,34 +22,40 @@
        (map kebab-case)
        (remove string/blank?)))
 
-(defn build-safe-ns-file-path [ns ext]
-  (str (string/join "/" (map snake-case (build-safe-ns-parts ns))) ext))
+(defn build-safe-ns-file-path [ns-name ext]
+  (str (string/join "/" (map snake-case (build-safe-ns-parts ns-name))) ext))
 
-(defn build-safe-ns [ns]
-  (symbol (string/join "." (build-safe-ns-parts ns))))
+(defn build-safe-ns-name [ns]
+  (string/join "." (build-safe-ns-parts ns)))
 
 ; ---------------------------------------------------------------------------------------------------------------------------
 
 (def max-clojure-fn-arity 20)
 
-(defn safe-name [name]
-  (symbol (kebab-case name)))
+(defn clojure-name [python-name]
+  (string/replace python-name "_" "-"))
+
+(defn safe-clj-symbol [name]
+  ; TODO: we should be more defensive here
+  (symbol (clojure-name name)))
 
 (defn format-docs [docs]
   (let [docstring (format-docstring docs)]
     (if-not (string/blank? docstring)
       (DocString. (format-docstring docs)))))
 
-(defn gen-clj-ns [name docstring]
-  `(~'ns ~name ::nl
-     ~@(if (some? docstring) [docstring ::nl])
-     (:refer-clojure :only ~'[defmacro declare]) ::nl
-     (:require ~'[bcljs.compiler :refer [emit]])))
+(defn gen-clj-ns [ns-name docstring]
+  (let [ns-name-symbol (symbol ns-name)]
+    `(~'ns ~ns-name-symbol ::nl
+       ~@(if (some? docstring) [docstring ::nl])
+       (:refer-clojure :only ~'[defmacro declare]) ::nl
+       (:require ~'[bcljs.compiler :refer [emit]]))))
 
-(defn gen-cljs-ns [name]
-  `(~'ns ~name ::nl
-     (:require-macros [~name]) ::nl
-     (:require ~'[bcljs.compiler])))
+(defn gen-cljs-ns [ns-name]
+  (let [ns-name-symbol (symbol ns-name)]
+    `(~'ns ~ns-name-symbol ::nl
+       (:require-macros [~ns-name-symbol]) ::nl
+       (:require ~'[bcljs.compiler]))))
 
 (defn gen-module-declaration []
   `(~'declare ~'mod))
@@ -62,7 +68,7 @@
   (some? (:default param)))
 
 (defn gen-function-arity [name params]
-  (let [names (map safe-name (map :name params))]
+  (let [names (map safe-clj-symbol (map :name params))]
     `([~@names] ::nl
       (~'emit :fn ~name ~'mod ~'&form ~@names))))
 
@@ -74,7 +80,7 @@
         arities (range min-arity (inc max-arity))
         param-arities (map #(take % params) arities)
         docstring (format-docs docs)
-        macro-name (safe-name name)
+        macro-name (safe-clj-symbol name)
         macro-name2 (str macro-name "+")]
     `(~'defmacro ~macro-name ::nl
        ~@(if docstring [docstring ::nl])
@@ -85,7 +91,7 @@
 (defn gen-ops-function [desc]
   (let [{:keys [name docs _params]} desc
         docstring (format-docs docs)
-        macro-name (safe-name name)]
+        macro-name (safe-clj-symbol name)]
     `(~'defmacro ~macro-name ::nl
        ~@(if docstring [docstring ::nl])
        (~'[] ::nl
@@ -100,7 +106,7 @@
          (~'emit :op-fn ~name ~'mod ~'&form ~'[oc ec undo] ~'opts)))))
 
 (defn is-ops-module? [module-info]
-  (string/starts-with? (:name module-info) "bpy.ops."))
+  (string/starts-with? (:py-name module-info) "bpy.ops."))
 
 (defn gen-desc [module-info desc]
   (case (:type desc)
@@ -135,10 +141,9 @@
   (apply merge (keep prepare-module-data descs)))
 
 (defn gen-clj [api-table module-info]
-  (let [{:keys [descs docs module]} api-table
-        ns (str ns-prefix "." module)
-        file-path (build-safe-ns-file-path ns ".clj")
-        ns-name (build-safe-ns ns)
+  (let [{:keys [descs docs]} api-table
+        {:keys [ns-name]} module-info
+        file-path (build-safe-ns-file-path ns-name ".clj")
         ns-docstring (format-docs docs)
         generated-descs (gen-descs module-info descs)
         parts (concat [(gen-clj-ns ns-name ns-docstring)
@@ -147,22 +152,43 @@
                       [(gen-module module-info)])]
     [file-path (emit parts)]))
 
-(defn gen-cljs [api-table]
-  (let [{:keys [module]} api-table
-        ns (str ns-prefix "." module)
-        file-path (build-safe-ns-file-path ns ".cljs")
-        ns-name (build-safe-ns ns)]
-    [file-path (emit [(gen-cljs-ns ns-name)])]))
+(defn convert-nested-vectors-to-js [v]
+  (if (vector? v)
+    [(ReaderTag. "js") (vec (mapcat convert-nested-vectors-to-js v))]
+    (do
+      (assert (or (string? v) (nil? v)) (str "unexpected " (pr-str v)))
+      [v])))
+
+(defn gen-cljs-params-type-spec [[fn-name params-type-spec]]
+  (let [name (symbol (str "*" (safe-clj-symbol fn-name) "-params"))
+        js-params-type-spec (convert-nested-vectors-to-js params-type-spec)]
+    `(~'def ~name ~@js-params-type-spec)))
+
+(defn gen-cljs-params-type-specs [params-data]
+  (keep gen-cljs-params-type-spec params-data))
+
+(defn gen-cljs [_api-table module-info]
+  (let [{:keys [ns-name params]} module-info
+        file-path (build-safe-ns-file-path ns-name ".cljs")
+        generated-param-type-specs (gen-cljs-params-type-specs params)
+        parts (concat [(gen-cljs-ns ns-name)]
+                      [(CodeComment. (str "note: in :advanced build unused params below should get elided"
+                                          " by Google Closure Compiler"))]
+                      generated-param-type-specs)]
+    [file-path (emit parts)]))
 
 ; ---------------------------------------------------------------------------------------------------------------------------
 
-(defn generate-files-for-table [api-table]
-  (let [{:keys [descs module]} api-table
+(defn generate-files-for-table [api-table py-module-name]
+  (let [{:keys [descs]} api-table
+        ns (str ns-prefix "." py-module-name)
+        ns-name (build-safe-ns-name ns)
         module-data (gen-module-data descs)
-        module-info {:name   module
-                     :params module-data}]
+        module-info {:py-name py-module-name
+                     :ns-name ns-name
+                     :params  module-data}]
     [(gen-clj api-table module-info)
-     (gen-cljs api-table)]))
+     (gen-cljs api-table module-info)]))
 
 ; ---------------------------------------------------------------------------------------------------------------------------
 
@@ -170,7 +196,7 @@
   (let [* (fn [[file-key api-table]]
             (binding [status/*reporter* reporter]
               (status/info (str "generating files for '" (name file-key) "'"))
-              (realize-deep (generate-files-for-table (assoc api-table :module (name file-key))))))]
+              (realize-deep (generate-files-for-table api-table (name file-key)))))]
     (mapcat *)))
 
 (defn generate [api-tables & [reporter]]
