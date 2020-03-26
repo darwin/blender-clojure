@@ -1,9 +1,8 @@
 (ns apigen.impl.parser
   (:require [clojure.string :as string]
-            [clojure.walk :refer [postwalk]]
             [com.rpl.specter :as s]
             [apigen.impl.status :as status]
-            [apigen.impl.helpers :refer :all]
+            [apigen.impl.helpers :refer [realize-deep pprint-xml]]
             [apigen.impl.lexer :refer [parse-params-signature parse-param-soup]]
             [apigen.impl.reader :refer [list-xml-files filter-xml-files retain-xml-files read-xml-data]])
   (:import [clojure.data.xml.node Element]))
@@ -151,7 +150,7 @@
                                                                 :soup   params-from-soup
                                                                 :params base-params} e)))))
     (catch Throwable e
-      (throw (ex-info (str "trouble extracting function params\n" (pprint-xml-element-data <desc>)) {:desc <desc>} e)))))
+      (throw (ex-info (str "trouble extracting function params\n" (pprint-xml <desc>)) {:desc <desc>} e)))))
 
 (defn process-function [<desc>]
   (assert (is-el? <desc> :desc))

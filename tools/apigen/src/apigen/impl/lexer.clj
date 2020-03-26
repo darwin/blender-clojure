@@ -1,9 +1,9 @@
 (ns apigen.impl.lexer
   (:require [blancas.kern.core :refer :all]
             [blancas.kern.i18n :refer [i18n]]
-            [apigen.impl.kern :refer :all]
             [clojure.string :as string]
-            [cuerdas.core :as cuerdas]))
+            [apigen.impl.kern :refer :all]
+            [apigen.impl.text :as text]))
 
 ; -- low level parsers ------------------------------------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@
 
 (defn cleanup-type-name [s]
   (-> s
-      (cuerdas/trim type-name-relax-chars)
+      (text/trim type-name-relax-chars)
       (string/replace "," ", ")))
 
 (def type-name

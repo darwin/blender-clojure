@@ -1,8 +1,7 @@
 (ns apigen.impl.docstring
   (:require [clojure.string :as string]
-            [cuerdas.core :as cuerdas]
             [apigen.impl.word-wrap :refer [wrap]]
-            [apigen.impl.helpers :as h]))
+            [apigen.impl.text :as text]))
 
 (def ^:dynamic *indent* 0)
 (def ^:dynamic *columns* nil)
@@ -21,9 +20,9 @@
 
 (defn prefix-text [text prefix]
   (->> text
-       (cuerdas/lines)
+       (text/lines)
        (prefix-lines prefix)
-       (cuerdas/unlines)))
+       (text/unlines)))
 
 (defn reflow-text [text indent & [max-columns]]
   (cond-> text

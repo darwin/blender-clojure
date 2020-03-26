@@ -2,7 +2,7 @@
   (:require [clojure.data.xml :as xml]
             [clojure.java.io :as io]
             [clojure.string :as string]
-            [apigen.impl.helpers :refer :all]
+            [apigen.impl.helpers :refer [realize-deep]]
             [apigen.impl.status :as status]))
 
 (def doctype-re #"<!DOCTYPE.*?>")

@@ -23,7 +23,7 @@
 (defn realize-deep [v]
   (s/transform (s/walker should-realize?) realize v))
 
-(defn pprint-xml-element-data [v]
+(defn pprint-xml [v]
   (let [data (s/transform (s/walker string?)
                           #(if (string/blank? (string/trim %)) s/NONE %)
                           v)]

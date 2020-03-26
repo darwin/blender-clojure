@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]
             [clojure.pprint :as pprint]
             [apigen.impl.types]
+            [apigen.impl.text :as text]
             [apigen.impl.helpers :as helpers]
             [apigen.impl.word-wrap :refer [wrap]]
             [cljfmt.core :as cljfmt])
@@ -33,17 +34,11 @@
 (defn prefix-block [prefix lines]
   (concat [(first lines)] (map #(if (empty? %) "" (str prefix %)) (rest lines))))
 
-(defn lines [s]
-  (string/split s #"\n|\r\n"))
-
-(defn unlines [s]
-  (string/join "\n" s))
-
 (defn prefix-text [prefix text]
   (->> text
-       (lines)
+       (text/lines)
        (prefix-block prefix)
-       (unlines)))
+       (text/unlines)))
 
 (defn indent-str [indent]
   (apply str (repeat indent INDENT-CHAR)))

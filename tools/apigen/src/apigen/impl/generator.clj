@@ -6,7 +6,7 @@
             [apigen.impl.reader :refer [list-xml-files filter-xml-files retain-xml-files read-xml-data]]
             [apigen.impl.parser :refer [parse-xml-data]]
             [apigen.impl.writer :refer [write-sources!]]
-            [apigen.impl.helpers :refer [realize-deep pprint-xml-element-data]]
+            [apigen.impl.helpers :refer [realize-deep pprint-xml]]
             [apigen.impl.output :as output]
             [apigen.impl.status :as status])
   (:import (apigen.impl.types DocString CodeComment PrettyEDN ReaderTag)))
@@ -90,7 +90,7 @@
     :function (if (is-ops-module? module)
                 (gen-ops-function desc)
                 (gen-function desc))
-    (status/warn (str "skipping desc '" (:name desc) "'\n" (pprint-xml-element-data desc)))))
+    (status/warn (str "skipping desc '" (:name desc) "'\n" (pprint-xml desc)))))
 
 (defn try-gen-desc [module desc]
   (try
@@ -109,7 +109,7 @@
 (defn prepare-module-data [desc]
   (case (:type desc)
     :function (prepare-fn-module-data desc)
-    (status/warn (str "skipping module-data for desc '" (:name desc) "'\n" (pprint-xml-element-data desc)))))
+    (status/warn (str "skipping module-data for desc '" (:name desc) "'\n" (pprint-xml desc)))))
 
 (defn gen-descs [module descs]
   (keep (partial try-gen-desc module) descs))
