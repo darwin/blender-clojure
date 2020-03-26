@@ -5,7 +5,7 @@
 (declare marshal-val)
 
 (defn marshal-kv-arg [[key val]]
-  [(shared/python-key key) (marshal-val val)])
+  [(invariants/python-key key) (marshal-val val)])
 
 (defn marshal-map-val [val]
   (assert (map? val))
@@ -34,11 +34,12 @@
     :else val))
 
 (defn apply-type-conversion-statically [type-specs [key val]]
-  (let [spec (shared/find-param-type-spec (shared/python-key key) type-specs)]
+  (let [spec (shared/find-param-type-spec (invariants/python-key key) type-specs)]
     (assert (some? spec))
     [key (convert-value-statically val spec)]))
 
 (defn gen-marshalled-kw-args-statically [kw-args param-specs]
+  ; TODO: we can check for param names typos
   (assert (map? kw-args))
   (let [args (->> kw-args
                   (map (partial apply-type-conversion-statically param-specs))
@@ -47,6 +48,7 @@
     `(~'js-obj ~@args)))
 
 (defn gen-marshalled-kw-args-dynamically [kw-args fn-name module]
+  ; TODO: we can check for param names typos
   (let [var-name (invariants/params-type-spec-var-name fn-name)
         ns-name (invariants/get-module-ns-name module)
         params-type-specs-sym (symbol ns-name var-name)]

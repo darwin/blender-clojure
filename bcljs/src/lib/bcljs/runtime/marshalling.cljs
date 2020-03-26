@@ -1,10 +1,11 @@
 (ns bcljs.runtime.marshalling
-  (:require [bcljs.shared :as shared]))
+  (:require [bcljs.shared :as shared]
+            [bcljs.invariants :as invariants]))
 
 (declare marshal-val)
 
 (defn marshal-kv-arg [[key val]]
-  [(shared/python-key key) (marshal-val val)])
+  [(invariants/python-key key) (marshal-val val)])
 
 (defn marshal-map-val [val]
   (assert (map? val))
@@ -35,7 +36,7 @@
     :else val))
 
 (defn apply-type-conversion-dynamically [specs [key val]]
-  (let [spec (shared/find-param-type-spec (shared/python-key key) specs)]
+  (let [spec (shared/find-param-type-spec (invariants/python-key key) specs)]
     (assert (some? spec))
     [key (convert-value-dynamically val spec)]))
 

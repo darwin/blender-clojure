@@ -79,6 +79,15 @@
   ; TODO: we should be more defensive here
   (symbol (clojure-name name)))
 
+; -- params -----------------------------------------------------------------------------------------------------------------
+
+(defn python-name [clojure-name]
+  (string/replace clojure-name "-" "_"))
+
+(defn python-key [clojure-key]
+  (-> (name clojure-key)
+      (python-name)))
+
 ; -- type specs -------------------------------------------------------------------------------------------------------------
 
 (defn params-type-spec-var-name [fn-name]
