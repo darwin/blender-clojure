@@ -1,21 +1,19 @@
 (ns apigen.impl.generator
-  (:require [clojure.walk :refer [postwalk]]
-            [clojure.string :as string]
-            [camel-snake-kebab.core :refer :all]
+  (:require [clojure.string :as string]
             [bcljs.invariants :as invariants]
-            [apigen.impl.word-wrap :refer [wrap]]
             [apigen.impl.types]
             [apigen.impl.docstring :refer [format-docstring]]
             [apigen.impl.reader :refer [list-xml-files filter-xml-files retain-xml-files read-xml-data]]
             [apigen.impl.parser :refer [parse-xml-data]]
             [apigen.impl.writer :refer [write-sources!]]
-            [apigen.impl.helpers :refer :all]
+            [apigen.impl.helpers :refer [realize-deep pprint-xml-element-data]]
+            [apigen.impl.output :as output]
             [apigen.impl.status :as status])
   (:import (apigen.impl.types DocString CodeComment PrettyEDN ReaderTag)))
 
-; ---------------------------------------------------------------------------------------------------------------------------
-
 (def max-clojure-fn-arity 20)
+
+; ---------------------------------------------------------------------------------------------------------------------------
 
 (defn format-docs [docs]
   (let [docstring (format-docstring docs)]
@@ -92,7 +90,7 @@
     :function (if (is-ops-module? module)
                 (gen-ops-function desc)
                 (gen-function desc))
-    (status/warn (str "skipping desc '" (:name desc) "'\n" (print-xml-element-data desc)))))
+    (status/warn (str "skipping desc '" (:name desc) "'\n" (pprint-xml-element-data desc)))))
 
 (defn try-gen-desc [module desc]
   (try
@@ -111,7 +109,7 @@
 (defn prepare-module-data [desc]
   (case (:type desc)
     :function (prepare-fn-module-data desc)
-    (status/warn (str "skipping module-data for desc '" (:name desc) "'\n" (print-xml-element-data desc)))))
+    (status/warn (str "skipping module-data for desc '" (:name desc) "'\n" (pprint-xml-element-data desc)))))
 
 (defn gen-descs [module descs]
   (keep (partial try-gen-desc module) descs))
@@ -129,7 +127,7 @@
                        (gen-module-declaration)]
                       generated-descs
                       [(gen-module module)])]
-    [file-path (emit parts)]))
+    [file-path (output/pprint parts)]))
 
 (defn convert-nested-vectors-to-js [v]
   (if (vector? v)
@@ -155,7 +153,7 @@
                       [(CodeComment. (str "note: in :advanced build unused params below should get elided"
                                           " by Google Closure Compiler"))]
                       generated-param-type-specs)]
-    [file-path (emit parts)]))
+    [file-path (output/pprint parts)]))
 
 ; ---------------------------------------------------------------------------------------------------------------------------
 

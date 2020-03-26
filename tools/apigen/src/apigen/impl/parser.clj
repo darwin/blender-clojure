@@ -151,7 +151,7 @@
                                                                 :soup   params-from-soup
                                                                 :params base-params} e)))))
     (catch Throwable e
-      (throw (ex-info (str "trouble extracting function params\n" (print-xml-element-data <desc>)) {:desc <desc>} e)))))
+      (throw (ex-info (str "trouble extracting function params\n" (pprint-xml-element-data <desc>)) {:desc <desc>} e)))))
 
 (defn process-function [<desc>]
   (assert (is-el? <desc> :desc))
