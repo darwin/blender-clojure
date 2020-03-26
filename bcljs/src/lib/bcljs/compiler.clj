@@ -50,7 +50,7 @@
 
 (defn gen-marshalled-kw-args-dynamically [kw-args param-specs]
   ; TODO: we should emit param-specs only once, or rely on GCC data deduplication?
-  `(marshal-kw-args ~kw-args ~(marshal-val param-specs)))
+  `(bcljs.runtime/marshal-kw-args ~kw-args ~(marshal-val param-specs)))
 
 (defn gen-marshalled-kw-args [kw-args param-specs]
   (cond
