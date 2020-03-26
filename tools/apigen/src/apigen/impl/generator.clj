@@ -123,28 +123,28 @@
   (let [{:keys [name params]} desc]
     {name (mapv prepare-param-type-info params)}))
 
-(defn prepare-module-data [_module-info desc]
+(defn prepare-module-data [desc]
   (case (:type desc)
     :function (prepare-fn-module-data desc)
     (status/warn (str "skipping module-data for desc '" (:name desc) "'\n" (print-xml-element-data desc)))))
 
 (defn gen-descs [module-info descs]
-  (let [generated-descs (keep (partial try-gen-desc module-info) descs)
-        module-data (apply merge (keep (partial prepare-module-data module-info) descs))]
-    [generated-descs module-data]))
+  (keep (partial try-gen-desc module-info) descs))
 
-(defn gen-clj [api-table]
+(defn gen-module-data [descs]
+  (apply merge (keep prepare-module-data descs)))
+
+(defn gen-clj [api-table module-info]
   (let [{:keys [descs docs module]} api-table
         ns (str ns-prefix "." module)
         file-path (build-safe-ns-file-path ns ".clj")
         ns-name (build-safe-ns ns)
         ns-docstring (format-docs docs)
-        module-info {:name module}
-        [generated-descs module-data] (gen-descs module-info descs)
+        generated-descs (gen-descs module-info descs)
         parts (concat [(gen-clj-ns ns-name ns-docstring)
                        (gen-module-declaration)]
                       generated-descs
-                      [(gen-module (assoc module-info :params module-data))])]
+                      [(gen-module module-info)])]
     [file-path (emit parts)]))
 
 (defn gen-cljs [api-table]
@@ -157,8 +157,12 @@
 ; ---------------------------------------------------------------------------------------------------------------------------
 
 (defn generate-files-for-table [api-table]
-  [(gen-clj api-table)
-   (gen-cljs api-table)])
+  (let [{:keys [descs module]} api-table
+        module-data (gen-module-data descs)
+        module-info {:name   module
+                     :params module-data}]
+    [(gen-clj api-table module-info)
+     (gen-cljs api-table)]))
 
 ; ---------------------------------------------------------------------------------------------------------------------------
 
