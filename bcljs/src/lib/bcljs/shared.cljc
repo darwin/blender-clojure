@@ -4,6 +4,9 @@
 (defn python-name [clojure-name]
   (string/replace clojure-name "-" "_"))
 
+(defn clojure-name [python-name]
+  (string/replace python-name "_" "-"))
+
 (defn python-key [clojure-key]
   (-> (name clojure-key)
       (python-name)))
