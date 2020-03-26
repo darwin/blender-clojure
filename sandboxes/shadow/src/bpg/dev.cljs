@@ -1,13 +1,12 @@
 (ns bpg.dev
   (:require [bcljs.bpy.ops.mesh :as mesh]
-            [bcljs.bpy.ops.object :as object]))
+            [bcljs.bpy.ops.object :as object]
+            [bpg.helpers :refer [try-silently]]))
 
 (defn clear-scene! []
   (js/console.log "Clearing scene...")
-  (try
-    (object/mode-set {:mode "OBJECT"})
-    (catch :default _e))
-  (object/select-all {:action "SELECT"})
+  (try-silently (object/mode-set {:mode :object}))
+  (object/select-all {:action :select})
   (object/delete))
 
 (def PI js/Math.PI)
@@ -17,7 +16,7 @@
 
 (defn add-torus []
   (mesh/primitive-torus-add
-    {:align    "WORLD"
+    {:align    :world
      :location [0 0 0]
      :rotation [(deg 45) (deg 45) 0]}))
 
@@ -34,8 +33,12 @@
 
 (mesh/primitive-torus-add
   (identity {:align    :world
-             :location [0 0 2]
+             :location [-2 0 2]
              :rotation [(deg 45) (deg 45) 0]}))
+
+;(doseq [i (range 40)]
+;  (mesh/primitive-torus-add
+;    {:location [(- i 20) (- i 20) i]}))
 
 (comment
   (add-torus)
