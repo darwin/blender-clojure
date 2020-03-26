@@ -1,16 +1,6 @@
 (ns bcljs.compiler
-  (:require [bcljs.shared :as shared]))
-
-; this function must be kept in sync with generator!
-(defn safe-clj-symbol [name]
-  ; TODO: we should be more defensive here
-  (symbol (shared/clojure-name name)))
-
-(defn get-module-name [module]
-  (:py-name module))
-
-(defn get-module-ns-name [module]
-  (:ns-name module))
+  (:require [bcljs.shared :as shared]
+            [bcljs.invariants :as invariants]))
 
 (declare marshal-val)
 
@@ -57,8 +47,8 @@
     `(~'js-obj ~@args)))
 
 (defn gen-marshalled-kw-args-dynamically [kw-args fn-name module]
-  (let [var-name (str "*" (safe-clj-symbol fn-name) "-params")
-        ns-name (get-module-ns-name module)
+  (let [var-name (invariants/params-type-spec-var-name fn-name)
+        ns-name (invariants/get-module-ns-name module)
         params-type-specs-sym (symbol ns-name var-name)]
     `(bcljs.runtime/marshal-kw-args ~kw-args ~params-type-specs-sym)))
 
@@ -69,13 +59,13 @@
     :else (gen-marshalled-kw-args-dynamically kw-args fn-name module)))
 
 (defn gen-fn [fn-name module _form args]
-  (let [module-name (get-module-name module)
+  (let [module-name (invariants/get-module-name module)
         js-symbol (symbol "js" (str module-name "." fn-name))]
     `(~js-symbol ~@args)))
 
 (defn gen-op-fn [fn-name module _form args]
   (let [[pos-args kw-args] args
-        module-name (get-module-name module)
+        module-name (invariants/get-module-name module)
         py-call (symbol "js" "bclj.pycall")
         js-symbol (symbol "js" (str module-name "." fn-name))
         param-specs (get-in module [:params fn-name])

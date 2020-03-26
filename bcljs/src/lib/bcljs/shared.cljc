@@ -1,11 +1,9 @@
 (ns bcljs.shared
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [bcljs.invariants :as invariants]))
 
 (defn python-name [clojure-name]
   (string/replace clojure-name "-" "_"))
-
-(defn clojure-name [python-name]
-  (string/replace python-name "_" "-"))
 
 (defn python-key [clojure-key]
   (-> (name clojure-key)
