@@ -6,3 +6,5 @@
 (deftype CodeComment [text])
 
 (deftype PrettyEDN [data])
+
+(deftype ReaderTag [tag])

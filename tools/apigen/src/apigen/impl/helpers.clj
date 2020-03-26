@@ -11,7 +11,7 @@
             [clojure.data.xml])
   (:import (clojure.data.xml.node Element)
            (java.io StringWriter)
-           (apigen.impl.types DocString CodeComment PrettyEDN)))
+           (apigen.impl.types DocString CodeComment PrettyEDN ReaderTag)))
 
 (def ^:const INDENT-CHAR " ")
 
@@ -95,6 +95,9 @@
 
     (instance? PrettyEDN v)
     (print (pprint-edn-as-str (.-data v) 120))
+
+    (instance? ReaderTag v)
+    (print (str "#" (.-tag v)))
 
     (= v :apigen.impl.generator/nl)
     (print "\n")
