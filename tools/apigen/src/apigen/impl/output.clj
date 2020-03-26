@@ -48,8 +48,10 @@
     (instance? DocString v)
     (let [current-indent (determine-current-out-str-indent writer)
           effective-indent (+ current-indent 1)
-          prefixed-text (prefix-text (indent-str effective-indent) (.-text v))]
-      (print (str \" prefixed-text \")))
+          filler (indent-str effective-indent)
+          prefixed-text (prefix-text filler (string/trim (.-text v)))
+          multi-line? (some? (string/index-of prefixed-text "\n"))]
+      (print (str \" prefixed-text (if multi-line? (str "\n" (indent-str current-indent))) \")))
 
     (instance? CodeComment v)
     (print (str "\n; " (.-text v) "\n"))

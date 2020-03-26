@@ -2,13 +2,14 @@
   (:require [clojure.string :as string]
             [bcljs.invariants :as invariants]
             [apigen.impl.types]
-            [apigen.impl.docstring :refer [format-docstring]]
+            [apigen.impl.docstring :as docstring]
             [apigen.impl.reader :refer [list-xml-files filter-xml-files retain-xml-files read-xml-data]]
             [apigen.impl.parser :refer [parse-xml-data]]
             [apigen.impl.writer :refer [write-sources!]]
             [apigen.impl.helpers :refer [realize-deep pprint-xml]]
             [apigen.impl.output :as output]
-            [apigen.impl.status :as status])
+            [apigen.impl.status :as status]
+            [apigen.impl.text :as text])
   (:import (apigen.impl.types DocString CodeComment PrettyEDN ReaderTag)))
 
 (def max-clojure-fn-arity 20)
@@ -16,14 +17,18 @@
 ; ---------------------------------------------------------------------------------------------------------------------------
 
 (defn format-docs [docs]
-  (let [docstring (format-docstring docs)]
-    (if-not (string/blank? docstring)
-      (DocString. (format-docstring docs)))))
+  (let [text (docstring/format-docstring docs)]
+    (if-not (string/blank? text)
+      text)))
+
+(defn emit-docstring-if-needed [text]
+  (if-not (string/blank? text)
+    [(DocString. text) ::nl]))
 
 (defn gen-clj-ns [ns-name docstring]
   (let [ns-name-symbol (symbol ns-name)]
     `(~'ns ~ns-name-symbol ::nl
-       ~@(if (some? docstring) [docstring ::nl])
+       ~@(emit-docstring-if-needed docstring)
        (:refer-clojure :only ~'[defmacro declare]) ::nl
        (:require ~'[bcljs.compiler :refer [emit]]))))
 
@@ -59,17 +64,38 @@
         macro-name (invariants/safe-clj-symbol name)
         macro-name2 (str macro-name "+")]
     `(~'defmacro ~macro-name ::nl
-       ~@(if docstring [docstring ::nl])
+       ~@(emit-docstring-if-needed docstring)
        ~@(interpose ::nl (map (partial gen-function-arity name) param-arities))
        ~@(if (> (count params) max-available-arity)
            [(CodeComment. (str "for more parameters use " macro-name2))]))))
 
-(defn gen-ops-function [desc]
-  (let [{:keys [name docs _params]} desc
-        docstring (format-docs docs)
+(def ops-fn-extra-docs-prelude-text
+  [""
+   "The optional opts param is a clojure map which might contain:"
+   ""])
+
+(def ops-fn-extra-docs-postlude-text
+  [""
+   "For information on calling convention see the top ns docstring."])
+
+(defn format-ops-fn-extra-docs [module fn-name params]
+  (let [prelude (text/unlines ops-fn-extra-docs-prelude-text)
+        opts-docs (docstring/format-params-doc params)
+        postlude (text/unlines ops-fn-extra-docs-postlude-text)
+        link (docstring/format-blender-api-fn-link module fn-name)
+        link-docs (str "\n\n" "-> " link)]
+    (if-not (empty? params)
+      (str prelude "\n" opts-docs link-docs "\n" postlude)
+      (str link-docs "\n" postlude))))
+
+(defn gen-ops-function [module desc]
+  (let [{:keys [name docs params]} desc
+        base-docs (text/append-dot-if-missing (format-docs docs))
+        extra-docs (format-ops-fn-extra-docs module name params)
+        docstring (str base-docs extra-docs)
         macro-name (invariants/safe-clj-symbol name)]
     `(~'defmacro ~macro-name ::nl
-       ~@(if docstring [docstring ::nl])
+       ~@(emit-docstring-if-needed docstring)
        (~'[] ::nl
          (~'emit :op-fn ~name ~'mod ~'&form ~'[])) ::nl
        (~'[opts] ::nl
@@ -88,7 +114,7 @@
 (defn gen-desc [module desc]
   (case (:type desc)
     :function (if (is-ops-module? module)
-                (gen-ops-function desc)
+                (gen-ops-function module desc)
                 (gen-function desc))
     (status/warn (str "skipping desc '" (:name desc) "'\n" (pprint-xml desc)))))
 
@@ -117,13 +143,24 @@
 (defn gen-module-data [descs]
   (apply merge (keep prepare-module-data descs)))
 
+(def ops-module-extra-docs-text
+  [""
+   "  ## About the calling convention"
+   ""
+   "  This is an ops namespace and all functions have a special calling convention."
+   "  You must pass regular arguments in opts as a map or js object. Map would be subject of api marshalling."
+   "  You can optionally pass oc, ec and undo parameters which correspond to override_context, execution_context and undo."
+   "  Read https://docs.blender.org/api/current/bpy.ops.html for details."])
+
 (defn gen-clj [api module]
   (let [{:keys [descs docs]} api
         ns-name (invariants/get-module-ns-name module)
         file-path (invariants/safe-ns-file-path ns-name ".clj")
         ns-docstring (format-docs docs)
+        extra-docs (if (is-ops-module? module)
+                     (text/unlines ops-module-extra-docs-text))
         generated-descs (gen-descs module descs)
-        parts (concat [(gen-clj-ns ns-name ns-docstring)
+        parts (concat [(gen-clj-ns ns-name (str ns-docstring extra-docs))
                        (gen-module-declaration)]
                       generated-descs
                       [(gen-module module)])]
@@ -223,5 +260,6 @@
       (write-sources! "../.workspace/gen" @data3))
 
     )
+
   )
 
