@@ -30,7 +30,7 @@
     `(~'ns ~ns-name-symbol ::nl
        ~@(emit-docstring-if-needed docstring)
        (:refer-clojure :only ~'[defmacro declare]) ::nl
-       (:require ~'[bcljs.compiler :refer [emit]]))))
+       (:require ~'[bcljs.compiler :refer [gen]]))))
 
 (defn gen-cljs-ns [ns-name]
   (let [ns-name-symbol (symbol ns-name)]
@@ -51,7 +51,7 @@
 (defn gen-function-arity [name params]
   (let [names (map invariants/safe-clj-symbol (map :name params))]
     `([~@names] ::nl
-      (~'emit :fn ~name ~'mod ~'&form ~@names))))
+      (~'gen ~'&env ~'&form :op-fn ~'mod ~name ~@names))))
 
 (defn gen-function [desc]
   (let [{:keys [name docs params]} desc
@@ -97,15 +97,15 @@
     `(~'defmacro ~macro-name ::nl
        ~@(emit-docstring-if-needed docstring)
        (~'[] ::nl
-         (~'emit :op-fn ~name ~'mod ~'&form ~'[])) ::nl
+         (~'gen ~'&env ~'&form :op-fn ~'mod ~name ~'[])) ::nl
        (~'[opts] ::nl
-         (~'emit :op-fn ~name ~'mod ~'&form ~'[] ~'opts)) ::nl
+         (~'gen ~'&env ~'&form :op-fn ~'mod ~name ~'[] ~'opts)) ::nl
        (~'[oc opts] ::nl
-         (~'emit :op-fn ~name ~'mod ~'&form ~'[oc] ~'opts)) ::nl
+         (~'gen ~'&env ~'&form :op-fn ~'mod ~name ~'[oc] ~'opts)) ::nl
        (~'[oc ec opts] ::nl
-         (~'emit :op-fn ~name ~'mod ~'&form ~'[oc ec] ~'opts)) ::nl
+         (~'gen ~'&env ~'&form :op-fn ~'mod ~name ~'[oc ec] ~'opts)) ::nl
        (~'[oc ec undo opts] ::nl
-         (~'emit :op-fn ~name ~'mod ~'&form ~'[oc ec undo] ~'opts)))))
+         (~'gen ~'&env ~'&form :op-fn ~'mod ~name ~'[oc ec undo] ~'opts)))))
 
 (defn is-ops-module? [module]
   (-> (invariants/get-module-name module)
@@ -233,7 +233,8 @@
                               ;(filter-xml-files #".*types.*")
                               ;(filter-xml-files #".*bmesh\.utils.*")
                               ;(retain-xml-files #".*ops.info.*")
-                              (retain-xml-files #".*ops.mesh.*")
+                              ;(retain-xml-files #".*ops.mesh.*")
+                              (retain-xml-files #".*bpy.ops.object.*")
                               ;(retain-xml-files #".*bpy.utils.preview.*")
                               ;(retain-xml-files #".*bgl.*")
                               ;(retain-xml-files #".*gotcha.*")
@@ -246,7 +247,7 @@
       (do
         (def data2 (atom nil))
         (reset! data2 (parse-xml-data @data))
-        (find-desc-by-name @data2 "average_normals"))
+        (find-desc-by-name @data2 "add"))
 
 
       (do
