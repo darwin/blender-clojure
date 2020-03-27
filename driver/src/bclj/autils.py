@@ -38,8 +38,11 @@ def wrap_coroutine_with_exceptions_reporting(coro, *args, **kwargs):
 def call_soon(loop, coro, *args, **kwargs):
     assert inspect.iscoroutinefunction(coro)
 
-    def callback():
-        wrapped_coro = wrap_coroutine_with_exceptions_reporting(coro, *args, **kwargs)
-        asyncio.ensure_future(wrapped_coro(), loop=loop)
+    wrapped_coro = wrap_coroutine_with_exceptions_reporting(coro, *args, **kwargs)
+    return asyncio.run_coroutine_threadsafe(wrapped_coro(), loop)
 
-    loop.call_soon_threadsafe(callback)
+
+async def get_result(fut):
+    while not fut.done():
+        await asyncio.sleep(0.1)
+    return fut.result()
