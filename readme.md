@@ -1,9 +1,9 @@
 # Clojure and Blender
 
-This is an experimental attempt to enable REPL-driven Blender scripting in ClojureScript.
+This is an experimental attempt to enable Blender scripting in ClojureScript.
 
 Technically we extend Blender with a Python3 script (we call it "the driver") 
-which embeds V8 JavaScript engine and handles running ClojureScript-generated Javascript in there.
+which embeds V8 Javascript engine and manages running ClojureScript-generated Javascript in there.
 
 Crazy? Maybe, but it works surprisingly well.
 
@@ -16,7 +16,8 @@ Actually, there is more to it:
 
 Please see examples in [sandboxes/shadow](sandboxes/shadow) to get the feel for it.
 
-This project also supports writing your scripts in [hylang](). See [docs/hylang.md](docs/hylang.md) for details.  
+This project also supports writing your scripts in [hylang](https://github.com/hylang/hy). 
+See [docs/hylang.md](docs/hylang.md) for details.  
 
 ### Initial setup
 
@@ -50,6 +51,30 @@ You should keep your npm deps fresh as well:
 cd sandboxes/shadow
 npm install
 ```
+
+#### Generate bcljs library
+
+The generator is currently under development so to prevent churn we don't commit generated library.
+
+You have to generate it yourself:
+
+```bash
+cd tools
+./scripts/generate-xml.sh
+./scripts/buidl-api.sh
+```
+
+It will ask to specify Blender binary path and Blender source code repo path on your machine.
+Instead of passing it via command-line options you can set it via env variables, here are mine:
+
+```text
+❯ env | grep BLENDER
+BLENDER_BINARY_PATH=/Applications/Blender.app/Contents/MacOS/Blender
+BLENDER_REPO_DIR=/Users/darwin/lab/blender 
+```
+
+The generated source files are rsynced into [bcljs/src/gen](bcljs/src/gen).
+See the [tools/readme.md](tools/readme.md) for more details.
 
 ## A typical workflow
 
