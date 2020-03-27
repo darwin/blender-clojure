@@ -3,6 +3,9 @@
          ; for development we keep it here for shadow-cljs to pickup file changes and hot-reload our code
          "../../bcljs/src/lib"
          "../../bcljs/src/gen"
+
+         ; for debugging with hacked shadow-cljs
+         ;"/Users/darwin/farm/shadow-cljs/src/main"
          ]
  :deps  {org.clojure/clojure       {:mvn/version "RELEASE"}
          org.clojure/clojurescript {:mvn/version "RELEASE"}
