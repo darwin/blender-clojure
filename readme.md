@@ -1,6 +1,24 @@
-This is a highly experimental attempt to enable Clojure REPL-driven development for Blender live-coding.
+# Clojure and Blender
 
-### Running it
+This is an experimental attempt to enable REPL-driven Blender scripting in ClojureScript.
+
+Technically we extend Blender with a Python3 script (we call it "the driver") 
+which embeds V8 JavaScript engine and handles running ClojureScript-generated Javascript in there.
+
+Crazy? Maybe, but it works surprisingly well.
+
+Actually, there is more to it:
+
+* We use [shadow-cljs](https://github.com/thheller/shadow-cljs) as our build tool, hot code reloading and REPL 
+* We implement minimal set of web APIs for shadow-cljs to work (it thinks it talks to a browser)
+* We expose Blender's [Python APIs](https://docs.blender.org/api/current/index.html) in the Javascript context
+* We generate [bcljs library](bcljs) wrapping Python APIs for more idiomatic ClojureScript access
+
+Please see examples in [sandboxes/shadow](sandboxes/shadow) to get the feel for it.
+
+This project also supports writing your scripts in [hylang](). See [docs/hylang.md](docs/hylang.md) for details.  
+
+### Initial setup
 
 Tested under macOS, should work under Linux as well.
 
@@ -11,23 +29,31 @@ export BCLJ_BLENDER_PATH="/path/to/your/blender"
 export BCLJ_BLENDER_PYTHON_PATH="/path/to/your/blender/and/its/python"
 ```
 
-* Run `./scripts/install-deps.sh` to install the Hy-lang dependencies in a place where Blender's internal Python can find them.
-* Run `./scripts/blender.sh -hylive examples/one-hundred-cubes.hy` to start Blender watching one-hundred-cubes.hy and re-loading it whenever it changes.
+#### Python dependencies
 
-## ClojureScript support
+* Run `./scripts/install-deps.sh` to install our dependencies (creates Python virtual env under `.venv`).
 
-Unfortunately installation might be quite involved because you have to compile V8 engine:
+#### Python V8 module
+
+Unfortunately you have to compile V8 by hand. We provide a script which worked for us under macOS:
+
 ```bash
 # this script should compile and install fresh v8 python module under venv/lib/.../site-packages
 ./scripts/prepare-v8.sh
 ```
+
+#### NPM dependencies
+
+You should keep your npm deps fresh as well:
 
 ```bash
 cd sandboxes/shadow
 npm install
 ```
 
-In another terminal session, compile and watch shadow-cljs sandbox: 
+## A typical workflow
+
+In one terminal session, compile and watch shadow-cljs sandbox: 
 ```bash
 cd sandboxes/shadow
 shadow-cljs watch sandbox
@@ -48,7 +74,6 @@ In another terminal session, start Blender with blender-clojure driver:
 ./scripts/blender.sh
 ```
 ```text
-> ./scripts/blender.sh
 BCLJ_BLENDER_PATH=/Applications/Blender.app/Contents/MacOS/Blender
 BCLJ_BLENDER_PYTHON_PATH=/Applications/Blender.app/Contents/Resources/2.82/python
 BCLJ_PACKAGES_DIR=/Users/darwin/lab/blender-clojure/.venv/lib/python3.7/site-packages
@@ -82,6 +107,6 @@ bpg.sandbox=> (+ 1 2)
 ```
 
 To start from scratch:
-```
+```bash
 ./scripts/nuke.sh
 ```
