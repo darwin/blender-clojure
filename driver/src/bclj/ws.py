@@ -1,10 +1,11 @@
 import asyncio
 import threading
+import time
 
 import websockets
 import logging
 
-from bclj import v8, autils
+from bclj import v8, autils, js
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,9 @@ def abbreviate_message_for_log(msg):
         return msg
 
 
+global_next_ws_instance_id = 1
+
+
 # note that this is not full WebSocket implementation,
 # we implement only what is currently needed for shadow-cljs to work
 class WebSocket(object):
@@ -56,50 +60,78 @@ class WebSocket(object):
     READY_STATE_CLOSING = 2
     READY_STATE_CLOSED = 3
 
+    async def _reload_page(self):
+        logger.debug("ws#{} finally calling js.reload_page()".format(self.id))
+        js.reload_page()
+
     async def _run_client_loop(self):
         logger.info("Connecting via websockets to '{}'".format(self.url))
         try:
             async with websockets.connect(self.url) as ws:
-                logger.debug("client_loop: entering receive loop... {}".format(ws))
+                logger.debug("ws#{} client_loop: entering receive loop... {}".format(self.id, ws))
                 self._ws = ws
-                self._change_ready_state(self.READY_STATE_OPEN)
+                await autils.get_result(self._change_ready_state(self.READY_STATE_OPEN))
+                done = False
                 try:
-                    while True:
+                    while not done:
                         msg = await ws.recv()
-                        logger.debug(
-                            "client_loop: got message len={}\n<< {}".format(len(msg), abbreviate_message_for_log(msg)))
-                        self._trigger_handler("onmessage", MessageEvent(msg))
-                except Exception as e:
-                    logger.error("client_loop: ran into problems {}".format(e))
+                        logger.debug("ws#{} client_loop: got message len={}\n<< {}".format(self.id, len(msg),
+                                                                                           abbreviate_message_for_log(msg)))
+
+                        await autils.get_result(self._trigger_handler("onmessage", MessageEvent(msg)))
+
+                        if "{:type :client/stale}" in msg:
+                            logger.debug("ws#{} stale client detected - scheduling page reload".format(self.id))
+                            logger.warning("Detected stale client - will reload...")
+                            # give the whole system some time before we attempt to refresh
+                            await asyncio.sleep(5)
+                            autils.call_soon(self._main_loop, self._reload_page)
+                            done = True
+
+                except websockets.exceptions.ConnectionClosed as e:
+                    logger.debug("ws#{} client_loop: connection closed {}".format(self.id, e))
+                    logger.warning("Websockets connection lost")
                     self._trigger_handler("onerror", ErrorEvent(e))
+                except Exception as e:
+                    logger.debug("ws#{} client_loop: exception {}".format(self.id, e))
+                    logger.error("Websocket ran into problems {}".format(e))
+                    self._trigger_handler("onerror", ErrorEvent(e))
+                logger.debug("ws#{} client_loop: leaving...".format(self.id))
                 self._ws = None
-                logger.debug("client_loop: leaving...")
+
         except Exception as e:
             self.readyState = self.READY_STATE_CLOSED
-            self._trigger_handler("onerror", ErrorEvent(e))
+            await autils.get_result(self._trigger_handler("onerror", ErrorEvent(e)))
 
     async def _trigger_handler_async(self, handler_name, *args):
-        logger.debug("triggering handler {} with args={}".format(handler_name, args))
+        logger.debug("ws#{} triggering handler {} with args={}".format(self.id, handler_name, args))
         handler = getattr(self, handler_name, None)
         if handler is not None:
             return v8.execute_callback(self._window.context, handler, *args)
 
     def _trigger_handler(self, handler_name, *args):
-        autils.call_soon(self._main_loop, self._trigger_handler_async, handler_name, *args)
+        return autils.call_soon(self._main_loop, self._trigger_handler_async, handler_name, *args)
 
     async def _send_message(self, msg):
-        return await self._ws.send(msg)
+        try:
+            return await self._ws.send(msg)
+        except asyncio.streams.IncompleteReadError as e:
+            logger.error("Interrupted websocket send: {}".format(e))
 
     def _change_ready_state(self, new_state):
         self.readyState = new_state
         if new_state is self.READY_STATE_OPEN:
-            self._trigger_handler("onopen", Event())
+            return self._trigger_handler("onopen", Event())
         elif new_state is self.READY_STATE_CLOSED:
-            self._trigger_handler("onclose", Event())
+            return self._trigger_handler("onclose", Event())
 
     @v8.report_exceptions
     def __init__(self, url, protocols=None):
         assert (protocols is None)
+        global global_next_ws_instance_id
+        self.id = global_next_ws_instance_id
+        global_next_ws_instance_id += 1
+        logger.debug("ws#{} __init__".format(self.id))
         start_async_loop_if_needed()
 
         assert threading.current_thread() is threading.main_thread()
@@ -120,11 +152,12 @@ class WebSocket(object):
 
     @v8.report_exceptions
     def send(self, msg, *_):
-        logger.debug("send msg={}".format(abbreviate_message_for_log(msg)))
+        logger.debug("ws#{} send msg={}".format(self.id, abbreviate_message_for_log(msg)))
         autils.call_soon(async_loop, self._send_message, msg)
 
     @v8.report_exceptions
     def close(self, code=None, reason=None, *_):
-        logger.debug("close code={} reason={}".format(code, reason))
-        self._ws.close()
+        logger.debug("ws#{} close code={} reason={}".format(self.id, code, reason))
         self._change_ready_state(self.READY_STATE_CLOSED)
+        self._ws.close()
+        logger.debug("ws#{} closed".format(self.id))
