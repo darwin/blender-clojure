@@ -47,11 +47,7 @@ if [[ -z "$BCLJ_XML_DIR" ]]; then
   BCLJ_XML_DIR="$WORKSPACE_DIR/xml"
 fi
 
-if [[ -z "$BLCJ_GEN_CLJS_DIR" ]]; then
-  echo "please specify --out option or provide BLCJ_GEN_CLJS_DIR env variable"
-  exit 1
-fi
-
+BLCJ_GEN_CLJS_DIR=${$BLCJ_GEN_CLJS_DIR:-"$ROOT_DIR/bcljs/src/gen"}
 TMP_GEN_DIR="$WORKSPACE_DIR/gen"
 
 if [[ $# != "0" ]]; then
