@@ -2,4 +2,5 @@
 .venv
 .build
 .idea/libraries
+bcljs/src/gen
 bcljs/.nrepl-port
