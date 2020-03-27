@@ -13,6 +13,9 @@ entry_script = "sandbox.js"
 
 logger = logging.getLogger(__name__)
 
+previous_root = None
+current_root = None
+
 
 def report_eval_error(e):
     logger.error(e.stack)
@@ -38,9 +41,6 @@ class Console(v8.JSClass):
         print(log.colorize_error("console.error"), *args)
 
 
-root = thug.Window("http://localhost/watcher.js")
-
-
 class BCLJ(v8.JSClass):
 
     @staticmethod
@@ -61,14 +61,17 @@ def import_scripts(path):
     js_eval(code, path)
 
 
-root.Node = thug.Node(root.doc)
-root.foreignConsole = Console()
-root.importScripts = import_scripts
-root.reportEvalError = report_eval_error
-assert sys.modules['bpy']
-root.bclj = BCLJ()
-root.bpy = sys.modules['bpy']
-root.window = root
+def create_root():
+    root = thug.Window("http://localhost/watcher.js")
+    root.Node = thug.Node(root.doc)
+    root.foreignConsole = Console()
+    root.importScripts = import_scripts
+    root.reportEvalError = report_eval_error
+    assert sys.modules['bpy']
+    root.bclj = BCLJ()
+    root.bpy = sys.modules['bpy']
+    root.window = root
+    return root
 
 
 def wrap_code(js):
@@ -76,7 +79,7 @@ def wrap_code(js):
 
 
 def js_eval(js, name=""):
-    with root.context as ctxt:
+    with current_root.context as ctxt:
         try:
             code = wrap_code(js)
             return ctxt.eval(code, name)
@@ -85,6 +88,16 @@ def js_eval(js, name=""):
 
 
 def bootstrap():
+    global current_root
+    current_root = create_root()
     js_eval("this.console = foreignConsole")
     js_eval("window.location.origin = \"{}\"".format(public_path))
     js_eval('importScripts("{}")'.format(entry_script))
+
+
+def reload_page():
+    print(log.colorize_js("===== page reload ====="))
+    global current_root
+    global previous_root
+    previous_root = current_root
+    bootstrap()
