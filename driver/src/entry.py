@@ -13,9 +13,16 @@ root_dir = os.path.abspath(os.path.join(this_dir, "..", ".."))
 packages_dir = os.environ.get("BCLJ_PACKAGES_DIR")
 if packages_dir is None:
     raise Exception("fatal: BCLJ_PACKAGES_DIR env variable is not set")
-hylib_dir = os.path.join(root_dir, "examples", "hylib")
+
 sys.path.insert(0, packages_dir)
-sys.path.insert(0, hylib_dir)
+
+hy_support = os.environ.get("BCLJ_HY_SUPPORT")
+if hy_support is not None:
+    hylib_dir = os.environ.get("BCLJ_HYLIB_DIR")
+    if hylib_dir is None:
+        raise Exception("fatal: BCLJ_HYLIB_DIR env variable is not set")
+    sys.path.insert(0, hylib_dir)
+
 sys.path.insert(0, this_dir)
 
 import bclj

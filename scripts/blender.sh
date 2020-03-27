@@ -96,11 +96,12 @@ export ENABLE_BACKTRACE=1
 export BCLJ_PACKAGES_DIR
 if [[ -n "$BCLJ_LIVE_FILE" || -n "$BCLJ_HYLANG_NREPL" ]]; then
   export BCLJ_HY_SUPPORT=1
+  export BCLJ_HYLIB_DIR=${BCLJ_HYLIB_DIR:-"$ROOT_DIR/sandboxes/hylang/hylib"}
 fi
 
 echo "BCLJ_BLENDER_PATH=$BCLJ_BLENDER_PATH"
 echo "BCLJ_BLENDER_PYTHON_PATH=$BCLJ_BLENDER_PYTHON_PATH"
-env | grep BCLJ_ | grep -v BCLJ_BLENDER_PATH | grep -v BCLJ_BLENDER_PYTHON_PATH || true
+env | grep BCLJ_ | grep -v BCLJ_BLENDER_PATH | grep -v BCLJ_BLENDER_PYTHON_PATH | sort || true
 
 if [[ -n "$BCLJ_BLENDER_WINDOW_PX" ]]; then
   if [[ "$OSTYPE" == "darwin"* ]]; then
