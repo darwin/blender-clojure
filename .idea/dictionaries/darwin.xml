@@ -37,6 +37,7 @@
       <w>excepthook</w>
       <w>exctype</w>
       <w>funcool</w>
+      <w>gobj</w>
       <w>homebrew</w>
       <w>hylang</w>
       <w>hylangfile</w>
@@ -49,6 +50,8 @@
       <w>lein</w>
       <w>levelname</w>
       <w>livecode</w>
+      <w>mathutils</w>
+      <w>noaudio</w>
       <w>nrepl</w>
       <w>objtype</w>
       <w>oldout</w>
@@ -66,6 +69,7 @@
       <w>socketserver</w>
       <w>statbuf</w>
       <w>stpyv</w>
+      <w>subsurf</w>
       <w>thheller</w>
       <w>ubercode</w>
       <w>ughsq</w>
