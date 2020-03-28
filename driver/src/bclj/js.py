@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-from bclj import log, v8, thug
+from bclj import log, v8, thug, blender
 import mathutils
 import inspect
 
@@ -110,6 +110,10 @@ class BCLJ(v8.JSClass):
     @staticmethod
     def mro(o):
         return o.__mro__
+
+    @staticmethod
+    def system_exit(code):
+        blender.kill(code)
 
 
 def import_scripts(path):

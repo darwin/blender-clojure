@@ -1,7 +1,9 @@
 import logging
+import sys
+
 import bpy  # import blender
 
-from bclj import worker, hy
+from bclj import worker, hy, os
 
 logger = logging.getLogger(__name__)
 
@@ -47,3 +49,7 @@ def register():
 def unregister():
     bpy.utils.unregister_class(ModalTimerOperator)
     bpy.app.handlers.frame_change_post.remove(frame_change_handler)
+
+
+def kill(code):
+    os.brutal_exit(code)
