@@ -31,6 +31,14 @@ def colorize_gray(s):
     return colorize(colorama.Fore.BLACK, s)
 
 
+def colorize_test(s):
+    return colorize(colorama.Fore.CYAN, s)
+
+
+def colorize_test_error(s):
+    return colorize(colorama.Fore.RED, s)
+
+
 def colorize_file(s):
     return colorize(colorama.Fore.CYAN, s)
 

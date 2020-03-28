@@ -83,6 +83,13 @@ class Console(v8.JSClass):
 class BCLJ(v8.JSClass):
 
     @staticmethod
+    def test_runner_print(*args):
+        print(*process_args_for_test_printing(args), end='')
+
+    def test_runner_print_err(*args):
+        print(*process_args_for_test_printing(args, style='err'), end='')
+
+    @staticmethod
     def pycall(f, pos_args, map_args):
         if map_args is not None:
             return f(*pos_args, **map_args)
