@@ -1,8 +1,7 @@
 import copy
-import os
 import sys
 
-from bclj import log
+from bclj import log, os
 
 
 def install_unhandled_exceptions_handler():
@@ -17,9 +16,7 @@ def install_unhandled_exceptions_handler():
             sys.stderr = last_good_stderr
             print("got KeyboardInterrupt")
             # stop_nrepl()
-            sys.stdout.flush()
-            sys.stderr.flush()
-            sys.exit(1)
+            os.brutal_exit(42)
         else:
             orig_excepthook(exc_type, exc_value, exc_traceback)
 
