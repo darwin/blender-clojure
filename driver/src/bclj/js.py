@@ -38,19 +38,46 @@ def read_script(path):
         return f.read()
 
 
+def indent_args(args):
+    new_args = []
+    for arg in args:
+        if isinstance(arg, str):
+            new_arg = arg.replace("\n", "\n            ")
+            new_args.append(new_arg)
+        else:
+            new_args.append(arg)
+
+    return new_args
+
+
+def process_args_for_test_printing(args, style='out'):
+    new_args = []
+    for arg in args:
+        if isinstance(arg, str):
+            if style is 'err':
+                new_arg = log.colorize_test_error(arg)
+            else:
+                new_arg = log.colorize_test(arg)
+            new_args.append(new_arg)
+        else:
+            new_args.append(arg)
+
+    return new_args
+
+
 class Console(v8.JSClass):
 
     @staticmethod
     def log(*args):
-        print(log.colorize_info("console.log"), *args)
+        print(log.colorize_info("console.log"), *indent_args(args))
 
     @staticmethod
     def warn(*args):
-        print(log.colorize_warning("console.warn"), *args)
+        print(log.colorize_warning("console.wrn"), *indent_args(args))
 
     @staticmethod
     def error(*args):
-        print(log.colorize_error("console.error"), *args)
+        print(log.colorize_error("console.err"), *indent_args(args))
 
 
 class BCLJ(v8.JSClass):
