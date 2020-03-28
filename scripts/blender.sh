@@ -146,16 +146,18 @@ env | grep BCLJ_ | grep -v BCLJ_BLENDER_PATH | grep -v BCLJ_BLENDER_PYTHON_PATH 
 
 if [[ -n "$BCLJ_BLENDER_WINDOW_PX" ]]; then
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS window customization via applescript, note: it will ask for granting permissions on first run
-    set -x
-    (
-      osascript "./scripts/blender-startup.applescript" \
-        "$BCLJ_BLENDER_WINDOW_PX" \
-        "$BCLJ_BLENDER_WINDOW_PY" \
-        "$BCLJ_BLENDER_WINDOW_W" \
-        "$BCLJ_BLENDER_WINDOW_H"
-    ) &
-    set +x
+    if [[ -z "$BCLJ_UNATTENDED" ]]; then
+      # macOS window customization via applescript, note: it will ask for granting permissions on first run
+      set -x
+      (
+        osascript "./scripts/blender-startup.applescript" \
+          "$BCLJ_BLENDER_WINDOW_PX" \
+          "$BCLJ_BLENDER_WINDOW_PY" \
+          "$BCLJ_BLENDER_WINDOW_W" \
+          "$BCLJ_BLENDER_WINDOW_H"
+      ) &
+      set +x
+    fi
   else
     # on other systems --window-geometry should map to external displays properly, I believe
     BCLJ_BLENDER_OPTS="$BCLJ_BLENDER_OPTS --window-geometry $BCLJ_BLENDER_WINDOW_PX $BCLJ_BLENDER_WINDOW_PY $BCLJ_BLENDER_WINDOW_W $BCLJ_BLENDER_WINDOW_H"
