@@ -8,6 +8,10 @@ Options:
   -d/--debug              Enable verbose debug printing.
   -l/--hylive file.hy     Watches hy file for changes and executes it in Blender on save or frame change.
   -y/--hyrepl             Open hylang nREPL server upon startup.
+  -e/--entry              Run this js script upon startup. Must be relative to origin/assets.
+  -a/--assets             Specifies directory to javascript assets. Must be relative to origin.
+  -o/--origin             Specifies origin directory for javascript runtime.
+  -u/--unattended         Run Blender in 'unattended' mode, used for running tests
 
 Note:
   You can pass blender executable options after -- separator, e.g.
@@ -51,6 +55,25 @@ while [[ $# -gt 0 ]]; do
     ENABLE_HYREPL=1
     shift
     ;;
+  -e | --entry)
+    shift
+    BCLJ_JS_ENTRY_SCRIPT="$1"
+    shift
+    ;;
+  -a | --assets)
+    shift
+    BCLJ_JS_ASSETS_DIR="$1"
+    shift
+    ;;
+  -o | --origin)
+    shift
+    BCLJ_JS_ORIGIN_DIR="$1"
+    shift
+    ;;
+  -u | --unattended)
+    BCLJ_UNATTENDED=1
+    shift
+    ;;
   --)
     COLLECT_BLENDER_OPTS=1
     shift
@@ -90,6 +113,24 @@ if [[ -n "$ENABLE_HYREPL" ]]; then
   export BCLJ_HYLANG_NREPL=1
 fi
 
+if [[ -z "$BCLJ_JS_ENTRY_SCRIPT" ]]; then
+  # use sandboxes/shadow project as default
+  BCLJ_JS_ENTRY_SCRIPT="sandbox.js"
+fi
+export BCLJ_JS_ENTRY_SCRIPT
+
+if [[ -z "$BCLJ_JS_ASSETS_DIR" ]]; then
+  # use sandboxes/shadow project as default
+  BCLJ_JS_ASSETS_DIR=".compiled-sandbox"
+fi
+export BCLJ_JS_ASSETS_DIR
+
+if [[ -z "$BCLJ_JS_ORIGIN_DIR" ]]; then
+  # use sandboxes/shadow project as default
+  BCLJ_JS_ORIGIN_DIR="$ROOT_DIR/sandboxes/shadow/public"
+fi
+export BCLJ_JS_ORIGIN_DIR
+
 BLENDER_FILE=${2:-assets/blank.blend}
 
 export ENABLE_BACKTRACE=1
@@ -121,5 +162,10 @@ if [[ -n "$BCLJ_BLENDER_WINDOW_PX" ]]; then
   fi
 fi
 
+if [[ -n "$BCLJ_UNATTENDED" ]]; then
+  BCLJ_BLENDER_OPTS="$BCLJ_BLENDER_OPTS -noaudio --python-exit-code 13"
+fi
+
 set -x
+# shellcheck disable=SC2086
 exec "$BCLJ_BLENDER_PATH" "$BLENDER_FILE" --python "$DRIVER_ENTRY_POINT" $BCLJ_BLENDER_OPTS "${BLENDER_CLI_OPTS[@]}"
