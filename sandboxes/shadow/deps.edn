@@ -1,8 +1,13 @@
 {:paths ["src"
+
          ; TODO: normally this should be consumed as a library
          ; for development we keep it here for shadow-cljs to pickup file changes and hot-reload our code
          "../../bcljs/src/lib"
          "../../bcljs/src/gen"
+
+         ; include tests for development
+         ; TODO: move this to a separate project
+         "../../tests/e2e/src/main"
 
          ; for debugging with hacked shadow-cljs
          ;"/Users/darwin/farm/shadow-cljs/src/main"
@@ -13,6 +18,11 @@
                                     :sha     "e6b5f0b84b736481269a62beb4ce70f99a30f9a0"}
 
          ;darwin/bcljs              {:local/root "../../bcljs"}
+
+         ; deps for tests, TODO: move this to a separate project
+         nubank/matcher-combinators {:mvn/version "1.5.1"}
+
+
 
          ; ----
          thheller/shadow-cljs      {:mvn/version "RELEASE"}}

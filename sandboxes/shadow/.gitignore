@@ -1,5 +1,5 @@
 node_modules/
-public/.compiled
+public/.compiled*
 
 /target
 /checkouts

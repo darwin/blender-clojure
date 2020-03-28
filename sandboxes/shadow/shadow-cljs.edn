@@ -3,11 +3,22 @@
           :init-ns bpg.nrepl}
  :builds {:sandbox
           {:target     :browser
-           :output-dir "public/.compiled"
-           :asset-path "/.compiled"
+           :output-dir "public/.compiled-sandbox"
+           :asset-path "/.compiled-sandbox"
            :devtools   {:hud          false
                         :log-style    ""
                         :repl-init-ns bpg.sandbox
                         :repl-pprint  true}
            :modules    {:sandbox
-                        {:init-fn bpg.sandbox/init}}}}}
+                        {:init-fn bpg.sandbox/init}}}
+
+          :tests
+          {:target     :browser
+           :output-dir "public/.compiled-tests"
+           :asset-path "/.compiled-tests"
+           :devtools   {:hud          false
+                        :log-style    ""
+                        :repl-init-ns bpg.sandbox
+                        :repl-pprint  true}
+           :modules    {:tests
+                        {:init-fn bcljs.tests.runner/-main}}}}}
