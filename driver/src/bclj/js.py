@@ -2,6 +2,8 @@ import os
 import sys
 import logging
 from bclj import log, v8, thug
+import mathutils
+import inspect
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", "..", ".."))
@@ -46,12 +48,24 @@ class BCLJ(v8.JSClass):
     @staticmethod
     def pycall(f, pos_args, map_args):
         if map_args is not None:
-            f(*pos_args, **map_args)
+            return f(*pos_args, **map_args)
         else:
             if pos_args is not None and len(pos_args) > 0:
-                f(*pos_args)
+                return f(*pos_args)
             else:
-                f()
+                return f()
+
+    @staticmethod
+    def repr(o):
+        return repr(o)
+
+    @staticmethod
+    def len(o):
+        return len(o)
+
+    @staticmethod
+    def mro(o):
+        return o.__mro__
 
 
 def import_scripts(path):
@@ -68,8 +82,12 @@ def create_root():
     root.importScripts = import_scripts
     root.reportEvalError = report_eval_error
     assert sys.modules['bpy']
-    root.bclj = BCLJ()
+    assert sys.modules['mathutils']
     root.bpy = sys.modules['bpy']
+    root.mathutils = sys.modules['mathutils']
+    assert sys.modules['inspect']
+    root.inspect = sys.modules['inspect']
+    root.bclj = BCLJ()
     root.window = root
     return root
 
