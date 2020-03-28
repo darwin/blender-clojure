@@ -9,9 +9,19 @@ this_dir = os.path.abspath(os.path.dirname(__file__))
 root_dir = os.path.abspath(os.path.join(this_dir, "..", "..", ".."))
 
 # TODO: make this configurable
-public_path = os.path.join(root_dir, "sandboxes", "shadow", "public")
-compiled_assets_path = os.path.join(public_path, ".compiled")
-entry_script = "sandbox.js"
+origin_dir = os.environ.get("BCLJ_JS_ORIGIN_DIR")
+if origin_dir is None:
+    raise Exception("fatal: BCLJ_JS_ORIGIN_DIR env variable is not set")
+
+assets_dir = os.environ.get("BCLJ_JS_ASSETS_DIR")
+if assets_dir is None:
+    raise Exception("fatal: BCLJ_JS_ASSETS_DIR env variable is not set")
+
+compiled_assets_path = os.path.join(origin_dir, assets_dir)
+
+entry_script = os.environ.get("BCLJ_JS_ENTRY_SCRIPT")
+if entry_script is None:
+    raise Exception("fatal: BCLJ_JS_ENTRY_SCRIPT env variable is not set")
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +119,7 @@ def bootstrap():
     global current_root
     current_root = create_root()
     js_eval("this.console = foreignConsole")
-    js_eval("window.location.origin = \"{}\"".format(public_path))
+    js_eval("window.location.origin = \"{}\"".format(origin_dir))
     js_eval('importScripts("{}")'.format(entry_script))
 
 
