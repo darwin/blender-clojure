@@ -1,18 +1,4 @@
-{:paths ["src/main"
-
-         ; TODO: normally this should be consumed as a library
-         ; for development we keep it here for shadow-cljs to pickup file changes and hot-reload our code
-         "src/bcljs-base"
-         "src/bcljs-lib"
-         "src/bcljs-gen"
-
-         ; include tests for development
-         ; TODO: move this to a separate project
-         "src/e2e-tests-main"
-
-         ; for debugging with hacked shadow-cljs
-         ;"/Users/darwin/farm/shadow-cljs/src/main"
-         ]
+{:paths ["src/main"]
  :deps  {org.clojure/clojure        {:mvn/version "RELEASE"}
          org.clojure/clojurescript  {:mvn/version "RELEASE"}
          appliedscience/js-interop  {:git/url "https://github.com/appliedsciencestudio/js-interop.git"

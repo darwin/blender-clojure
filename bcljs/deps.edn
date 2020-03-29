@@ -1,4 +1,5 @@
-{:paths ["src/gen"
+{:paths ["src/base"
+         "src/gen"
          "src/lib"]
  :deps  {org.clojure/clojure {:mvn/version "1.10.1"}
          org.clojure/clojurescript {:mvn/version "1.10.597"}}}

@@ -1,5 +1,5 @@
-{:paths   ["src"
-           "../../bcljs/src/lib"]
+{:paths   ["src/base"
+           "src/main"]
  :deps    {org.clojure/clojure   {:mvn/version "1.10.1"}
            org.clojure/data.xml  {:mvn/version "0.2.0-alpha6"}
            org.clojure/tools.cli {:mvn/version "1.0.194"}

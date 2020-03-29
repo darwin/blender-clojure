@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/bcljs/bcljs.iml" filepath="$PROJECT_DIR$/bcljs/bcljs.iml" />
       <module fileurl="file://$PROJECT_DIR$/blender-clojure.iml" filepath="$PROJECT_DIR$/blender-clojure.iml" />
       <module fileurl="file://$PROJECT_DIR$/driver/driver.iml" filepath="$PROJECT_DIR$/driver/driver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tests/e2e/e2e.iml" filepath="$PROJECT_DIR$/tests/e2e/e2e.iml" />
       <module fileurl="file://$PROJECT_DIR$/sandboxes/hylang/examples/examples.iml" filepath="$PROJECT_DIR$/sandboxes/hylang/examples/examples.iml" />
       <module fileurl="file://$PROJECT_DIR$/sandboxes/shadow/shadow.iml" filepath="$PROJECT_DIR$/sandboxes/shadow/shadow.iml" />
     </modules>

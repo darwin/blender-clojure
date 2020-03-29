@@ -1,7 +1,8 @@
 (ns bcljs.tests.runner
   (:require-macros [bcljs.tests.runner :refer [with-test-runner-printing]])
   (:require [cljs.test]
-            [bcljs.tests.suites.base]))
+            [bcljs.tests.suites.base]
+            [bcljs.tests.suites.pyv8]))
 
 (def ^:dynamic *exit-to-system* false)
 
@@ -24,5 +25,11 @@
 ; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 (comment
+
+  (throw (ex-info "example error" {:some "data"}))
+
+  (js/bclj.len [1 2 3])
+  (js/bclj.len #js [1 2 3])
+
   (run-tests)
   )

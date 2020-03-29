@@ -2,7 +2,7 @@
 
 This is an experimental attempt to enable Blender scripting in ClojureScript.
 
-Technically we extend Blender with a Python3 script (we call it "the driver") 
+Technically we extend Blender with a Python3 script (see [driver](driver)) 
 which embeds V8 Javascript engine and manages running ClojureScript-generated Javascript in there.
 
 Crazy? Maybe, but it works surprisingly well.
