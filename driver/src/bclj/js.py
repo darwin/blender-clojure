@@ -86,6 +86,7 @@ class BCLJ(v8.JSClass):
     def test_runner_print(*args):
         print(*process_args_for_test_printing(args), end='')
 
+    @staticmethod
     def test_runner_print_err(*args):
         print(*process_args_for_test_printing(args, style='err'), end='')
 
@@ -116,6 +117,13 @@ class BCLJ(v8.JSClass):
         blender.kill(code)
 
 
+class Test(v8.JSClass):
+
+    @staticmethod
+    def get_simple_python_sequence():
+        return [1, 2, 3]
+
+
 def import_scripts(path):
     full_path = os.path.join(compiled_assets_path, path)
     logger.debug("request to import '{}'".format(log.colorize_file(full_path)))
@@ -136,6 +144,7 @@ def create_root():
     assert sys.modules['inspect']
     root.inspect = sys.modules['inspect']
     root.bclj = BCLJ()
+    root.test = Test()
     root.window = root
     return root
 
