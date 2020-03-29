@@ -4,6 +4,8 @@ set -e -o pipefail
 # shellcheck source=_config.sh
 source "$(dirname "${BASH_SOURCE[0]}")/_config.sh"
 
+BCLJ_STPYV8_REPO_URL=${BCLJ_STPYV8_REPO_URL:-https://github.com/darwin/stpyv8.git}
+
 DO_CLONE=1
 DO_BREW=1
 DO_V8=1
@@ -71,7 +73,7 @@ if [[ -n "$DO_CLONE" ]]; then
     git pull
     cd ..
   else
-    git clone https://github.com/area1/stpyv8.git
+    git clone "$BCLJ_STPYV8_REPO_URL"
   fi
 fi
 
@@ -90,7 +92,6 @@ if [[ -n "$DO_V8" ]]; then
   python2 setup.py v8
   export PATH=$PREV_PATH
 fi
-
 
 if [[ -n "$DO_STPYV8" ]]; then
   python3 -m venv env
