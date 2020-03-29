@@ -5,6 +5,7 @@ set -e -o pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_config.sh"
 
 BCLJ_STPYV8_REPO_URL=${BCLJ_STPYV8_REPO_URL:-https://github.com/darwin/stpyv8.git}
+BCLJ_VENDOR_STPYV8_DIR=${BCLJ_VENDOR_STPYV8_DIR}
 
 DO_CLONE=1
 DO_BREW=1
@@ -21,8 +22,7 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -d | --debug)
-    ENABLE_DEBUG=1
-    STPYV8_EXTRA_OPTS+=("--debug")
+    BCLJ_DEBUG=1
     shift
     ;;
   --only-stpyv8)
@@ -67,6 +67,10 @@ set -x
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
+if [[ -n "$BCLJ_VENDOR_STPYV8_DIR" ]]; then
+  DO_CLONE=
+fi
+
 if [[ -n "$DO_CLONE" ]]; then
   if [[ -d "stpyv8" ]]; then
     cd stpyv8
@@ -77,7 +81,16 @@ if [[ -n "$DO_CLONE" ]]; then
   fi
 fi
 
-cd stpyv8
+if [[ -z "$BCLJ_VENDOR_STPYV8_DIR" ]]; then
+  cd stpyv8
+else
+  cd "$BCLJ_VENDOR_STPYV8_DIR"
+fi
+
+if [[ -n "$BCLJ_DEBUG" ]]; then
+  STPYV8_EXTRA_OPTS+=("--debug")
+  export STPYV8_DEBUG=1
+fi
 
 unset V8_HOME
 
